@@ -377,7 +377,12 @@ PSI (WEST)
             <span id="psi" class="value">Loading...</span>
         </div>
         <div id="psiStatus" class="status-chip">Loading...</div>
-        <div class="small">24-hour PSI, West region</div>
+        <div
+    id="psiRegionDescription"
+    class="small">
+    24-hour PSI, West region
+</div>
+
     </section>
 
     <section class="card">
@@ -780,6 +785,11 @@ setText(
 setText(
     "psiRegionTitle",
     `PSI (${currentZone.toUpperCase()})`
+);
+
+setText(
+    "psiRegionDescription",
+    `24-hour PSI, ${currentZone.toUpperCase()} region`
 );
         
         setText("psi", String(currentPSI));
