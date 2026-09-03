@@ -753,7 +753,7 @@ async function getPSI() {
         const value =
     payload.data.items?.[0]?.readings
     ?.psi_twenty_four_hour?.[currentZone];
-`
+
 
         if (value === undefined || value === null) {
             throw new Error("PSI West reading was not found");
