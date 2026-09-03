@@ -1074,11 +1074,27 @@ async function refreshDashboard() {
 /* START */
 
 document.addEventListener("DOMContentLoaded", function () {
+
     updateClock();
+
     refreshDashboard();
 
     setInterval(updateClock, 1000);
     setInterval(refreshDashboard, REFRESH_INTERVAL_MS);
+
+});
+
+/* REGION SELECTOR */
+
+document.getElementById("zoneSelector")
+.addEventListener("change", function() {
+
+    currentZone = this.value;
+
+    console.log("Zone changed:", currentZone);
+
+    refreshDashboard();
+
 });
 </script>
 
