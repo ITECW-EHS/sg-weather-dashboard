@@ -1,1 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+Singapore Weather & Outdoor Work Dashboard v2.0
+</title>
+
+style.css
+
+</head>
+
+<body>
+
+<!-- ====================================================== -->
+<!-- HEADER -->
+<!-- ====================================================== -->
+
+<header>
+
+<h1>
+Singapore Weather & Outdoor Work Dashboard
+</h1>
+
+<p>
+Nationwide Multi-Zone Safety Monitoring
+</p>
+
+<div class="update-banner">
+Last Updated:
+<span id="lastUpdated">Loading...</span>
+</div>
+
+</header>
+
+<!-- ====================================================== -->
+<!-- CONTROL PANEL -->
+<!-- ====================================================== -->
+
+<section class="control-panel">
+
+<div class="control-card">
+
+<label for="zoneSelector">
+Select Singapore Zone
+</label>
+
+<select id="zoneSelector">
+
+<option value="west">
+West
+</option>
+
+<option value="east">
+East
+</option>
+
+<option value="north">
+North
+</option>
+
+<option value="south">
+South
+</option>
+
+<option value="central">
+Central
+</option>
+
+</select>
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- NATIONAL OVERVIEW -->
+<!-- ====================================================== -->
+
+<section class="national-overview">
+
+<h2>
+Singapore Overview
+</h2>
+
+<div class="overview-grid">
+
+<div class="zone-card" id="westStatus">
+West
+</div>
+
+<div class="zone-card" id="eastStatus">
+East
+</div>
+
+<div class="zone-card" id="northStatus">
+North
+</div>
+
+<div class="zone-card" id="southStatus">
+South
+</div>
+
+<div class="zone-card" id="centralStatus">
+Central
+</div>
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- SELECTED ZONE -->
+<!-- ====================================================== -->
+
+<section class="selected-location">
+
+<h2>
+Current Zone
+</h2>
+
+<h3 id="selectedRegion">
+Western Singapore
+</h3>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- WEATHER CARDS -->
+<!-- ====================================================== -->
+
+<section class="weather-cards">
+
+<div class="card">
+
+<h3>Temperature</h3>
+
+<div id="temperature">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Humidity</h3>
+
+<div id="humidity">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Rainfall</h3>
+
+<div id="rainfall">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Forecast</h3>
+
+<div id="forecast">
+--
+</div>
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- SAFETY CARDS -->
+<!-- ====================================================== -->
+
+<section class="safety-cards">
+
+<div class="card">
+
+<h3>PSI</h3>
+
+<div id="psi">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>WBGT</h3>
+
+<div id="wbgt">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Heat Stress</h3>
+
+<div id="heatStress">
+--
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Lightning Risk</h3>
+
+<div id="lightningRisk">
+--
+</div>
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- OUTDOOR WORK ADVISORY -->
+<!-- ====================================================== -->
+
+<section class="outdoor-advisory">
+
+<div class="advisory-card">
+
+<h2>
+Outdoor Work Advisory
+</h2>
+
+<div id="workAdvisory">
+
+Loading...
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- ACTIVE WARNINGS -->
+<!-- ====================================================== -->
+
+<section class="warning-section">
+
+<h2>
+Active Alerts
+</h2>
+
+<div id="warningPanel">
+
+No Active Alerts
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- SAFETY SUMMARY -->
+<!-- ====================================================== -->
+
+<section class="safety-summary">
+
+<h2>
+Safety Status
+</h2>
+
+<div id="safetyMessage">
+
+Loading...
+
+</div>
+
+</section>
+
+<!-- ====================================================== -->
+<!-- FOOTER -->
+<!-- ====================================================== -->
+
+<footer>
+
+Singapore Weather &
+Outdoor Work Dashboard v2.0
+
+</footer>
+
+script.jsscript>
+
+</body>
+</html>
