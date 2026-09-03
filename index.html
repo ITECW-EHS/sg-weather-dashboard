@@ -504,6 +504,16 @@ const API = {
         "https://api-open.data.gov.sg/v2/real-time/api/rainfall"
 };
 
+/* FORECAST AREA MAPPING */
+
+const FORECAST_AREAS = {
+    west: "Choa Chu Kang",
+    east: "Changi",
+    north: "Woodlands",
+    south: "Sentosa",
+    central: "Marina Bay"
+};
+    
 /* LIVE VALUES */
 
 let currentZone = "west";
@@ -905,10 +915,27 @@ async function getForecast() {
             throw new Error("Forecast list was not found");
         }
 
-        const selected =
-            forecasts.find(item => item.area === "Choa Chu Kang") ||
-            forecasts.find(item => item.area === "Tengah") ||
-            forecasts[0];
+        const targetArea =
+    FORECAST_AREAS[currentZone];
+
+const selected =
+    forecasts.find(
+        item => item.area === targetArea
+    ) || forecasts[0];
+
+console.log(
+    "FORECAST AREA:",
+    targetArea
+);
+
+console.log(
+    "FORECAST VALUE:",
+    selected?.forecast
+);
+
+currentForecast =
+    String(selected?.forecast || "Forecast unavailable");
+
 
         currentForecast =
             String(selected?.forecast || "Forecast unavailable");
