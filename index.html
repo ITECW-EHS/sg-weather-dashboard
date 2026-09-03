@@ -752,7 +752,7 @@ async function getPSI() {
 
         const value =
     payload.data.items?.[0]?.readings
-    ?.psi_twenty_four_hour?.[currentZone];
+    ?.psi_twenty_four_hour?.west;
 
 
         if (value === undefined || value === null) {
