@@ -748,7 +748,9 @@ async function getLightning() {
 async function getPSI() {
     try {
         const payload =
-            await fetchJson(API.PSI, "PSI");
+    await fetchJson(API.PSI, "PSI");
+
+console.log("PSI PAYLOAD", payload);
 
         const value =
     payload.data.items?.[0]?.readings
