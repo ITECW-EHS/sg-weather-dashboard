@@ -264,15 +264,57 @@ body {
 <body>
 
 <header class="header">
+
     <div>
         <h1>Singapore Weather & Outdoor Work Dashboard</h1>
-        <div class="version">Version 1.4 | Weather Visualisation</div>
+        <div class="version">Version 2.0 | Multi-Zone Edition</div>
     </div>
 
     <div class="clock-panel">
         <div id="clock">Loading time...</div>
         <div class="small">Singapore Time</div>
     </div>
+
+    <div style="
+        width:100%;
+        margin-top:15px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        gap:10px;
+        flex-wrap:wrap;
+    ">
+
+        <label for="zoneSelector">
+            Region:
+        </label>
+
+        <select id="zoneSelector">
+
+            <option value="west">
+                West
+            </option>
+
+            <option value="east">
+                East
+            </option>
+
+            <option value="north">
+                North
+            </option>
+
+            <option value="south">
+                South
+            </option>
+
+            <option value="central">
+                Central
+            </option>
+
+        </select>
+
+    </div>
+
 </header>
 
 <section id="banner">CHECKING LIVE CONDITIONS</section>
