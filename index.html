@@ -368,7 +368,10 @@ body {
     </section>
 
     <section class="card">
-        <h2>PSI (West)</h2>
+        <h2 id="psiRegionTitle">
+PSI (WEST)
+</h2>
+
         <div class="metric-row">
             <span class="metric-icon">🌫️</span>
             <span id="psi" class="value">Loading...</span>
@@ -769,7 +772,16 @@ console.log("PSI VALUE:", value);
         }
 
         currentPSI = Number(value);
+setText(
+    "psiRegionLabel",
+    `PSI ${currentZone.toUpperCase()}`
+);
 
+setText(
+    "psiRegionTitle",
+    `PSI (${currentZone.toUpperCase()})`
+);
+        
         setText("psi", String(currentPSI));
         setText("summaryPSI", String(currentPSI));
 
