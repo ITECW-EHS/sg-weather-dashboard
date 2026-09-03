@@ -754,7 +754,7 @@ console.log("PSI PAYLOAD", payload);
 
         const value =
     payload.data.items?.[0]?.readings
-    ?.psi_twenty_four_hour?.west;
+    ?.psi_twenty_four_hourly?.[currentZone];
 
 
         if (value === undefined || value === null) {
