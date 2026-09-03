@@ -752,9 +752,12 @@ async function getPSI() {
 
 console.log("PSI PAYLOAD", payload);
 
-        const value = 79
+        const value =
     payload.data.items?.[0]?.readings
     ?.psi_twenty_four_hourly?.[currentZone];
+
+console.log("PSI REGION:", currentZone);
+console.log("PSI VALUE:", value);
 
 
         if (value === undefined || value === null) {
