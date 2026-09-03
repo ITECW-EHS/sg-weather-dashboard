@@ -1,299 +1,1043 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>
-Singapore Weather & Outdoor Work Dashboard v2.0
-</title>
+<title>ITE College West Weather Dashboard v1.4</title>
 
-style.css
+<style>
+:root {
+    --page-bg: #07142f;
+    --card-bg: #223966;
+    --card-border: #365180;
+    --text: #ffffff;
+    --muted: #b9c7df;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #38bdf8;
+    --grey: #64748b;
+}
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    background: var(--page-bg);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 18px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 48px);
+    line-height: 1.15;
+}
+
+.version {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.clock-panel {
+    text-align: right;
+    white-space: nowrap;
+}
+
+#clock {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#banner {
+    margin: 20px 0 14px;
+    padding: 22px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 800;
+    background: var(--grey);
+    color: #ffffff;
+}
+
+.summary-bar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.summary-item {
+    padding: 12px 14px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    background: rgba(34, 57, 102, 0.65);
+}
+
+.summary-label {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-value {
+    display: block;
+    margin-top: 4px;
+    font-weight: 700;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.card {
+    min-height: 190px;
+    padding: 24px;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    background: var(--card-bg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.card h2 {
+    margin: 0 0 24px;
+    font-size: 21px;
+}
+
+.metric-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.metric-icon {
+    font-size: 38px;
+}
+
+.value {
+    font-size: clamp(40px, 5vw, 58px);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.status-chip {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: var(--grey);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.forecast-value {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.advisory {
+    font-size: 18px;
+    line-height: 1.65;
+}
+
+.risk-list {
+    display: grid;
+    gap: 12px;
+}
+
+.risk-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.risk-value {
+    font-weight: 800;
+}
+
+.small {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.api-panel {
+    margin-top: 18px;
+    padding: 14px 16px;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    background: rgba(34, 57, 102, 0.55);
+}
+
+.api-panel h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
+#apiStatus {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.footer {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--card-border);
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.green-text {
+    color: var(--green);
+}
+
+.amber-text {
+    color: var(--amber);
+}
+
+.red-text {
+    color: var(--red);
+}
+
+.blue-text {
+    color: var(--blue);
+}
+
+.grey-text {
+    color: var(--muted);
+}
+
+@media (max-width: 760px) {
+    body {
+        padding: 15px;
+    }
+
+    .header {
+        flex-direction: column;
+    }
+
+    .clock-panel {
+        text-align: left;
+    }
+
+    .summary-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 430px) {
+    .summary-bar {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<!-- ====================================================== -->
-<!-- HEADER -->
-<!-- ====================================================== -->
+<header class="header">
+    <div>
+        <h1>ITE College West Weather Dashboard</h1>
+        <div class="version">Version 1.4 | Weather Visualisation</div>
+    </div>
 
-<header>
-
-<h1>
-Singapore Weather & Outdoor Work Dashboard
-</h1>
-
-<p>
-Nationwide Multi-Zone Safety Monitoring
-</p>
-
-<div class="update-banner">
-Last Updated:
-<span id="lastUpdated">Loading...</span>
-</div>
-
+    <div class="clock-panel">
+        <div id="clock">Loading time...</div>
+        <div class="small">Singapore Time</div>
+    </div>
 </header>
 
-<!-- ====================================================== -->
-<!-- CONTROL PANEL -->
-<!-- ====================================================== -->
+<section id="banner">CHECKING LIVE CONDITIONS</section>
 
-<section class="control-panel">
+<section class="summary-bar">
+    <div class="summary-item">
+        <span class="summary-label">WBGT</span>
+        <span id="summaryWBGT" class="summary-value">Loading...</span>
+    </div>
 
-<div class="control-card">
+    <div class="summary-item">
+        <span class="summary-label">PSI West</span>
+        <span id="summaryPSI" class="summary-value">Loading...</span>
+    </div>
 
-<label for="zoneSelector">
-Select Singapore Zone
-</label>
+    <div class="summary-item">
+        <span class="summary-label">Lightning</span>
+        <span id="summaryLightning" class="summary-value">Loading...</span>
+    </div>
 
-<select id="zoneSelector">
-
-<option value="west">
-West
-</option>
-
-<option value="east">
-East
-</option>
-
-<option value="north">
-North
-</option>
-
-<option value="south">
-South
-</option>
-
-<option value="central">
-Central
-</option>
-
-</select>
-
-</div>
-
+    <div class="summary-item">
+        <span class="summary-label">Forecast</span>
+        <span id="summaryForecast" class="summary-value">Loading...</span>
+    </div>
 </section>
 
-<!-- ====================================================== -->
-<!-- NATIONAL OVERVIEW -->
-<!-- ====================================================== -->
+<main class="grid">
 
-<section class="national-overview">
+    <section class="card">
+        <h2>WBGT</h2>
+        <div class="metric-row">
+            <span class="metric-icon">🌡️</span>
+            <span id="wbgt" class="value">Loading...</span>
+        </div>
+        <div id="wbgtStatus" class="status-chip">Loading...</div>
+        <div id="wbgtTime" class="small">Awaiting API response</div>
+    </section>
 
-<h2>
-Singapore Overview
-</h2>
+    <section class="card">
+        <h2>Lightning Observations</h2>
+        <div class="metric-row">
+            <span class="metric-icon">⚡</span>
+            <span id="lightning" class="value">Loading...</span>
+        </div>
+        <div id="lightningStatus" class="status-chip">Loading...</div>
+        <div class="small">Observations returned by the Singapore API</div>
+    </section>
 
-<div class="overview-grid">
+    <section class="card">
+        <h2>PSI (West)</h2>
+        <div class="metric-row">
+            <span class="metric-icon">🌫️</span>
+            <span id="psi" class="value">Loading...</span>
+        </div>
+        <div id="psiStatus" class="status-chip">Loading...</div>
+        <div class="small">24-hour PSI, West region</div>
+    </section>
 
-<div class="zone-card" id="westStatus">
-West
-</div>
+    <section class="card">
+        <h2>Air Temperature</h2>
+        <div class="metric-row">
+            <span class="metric-icon">🌡</span>
+            <span id="temperature" class="value">Loading...</span>
+        </div>
+        <div id="temperatureStatus" class="status-chip">Live reading</div>
+    </section>
 
-<div class="zone-card" id="eastStatus">
-East
-</div>
+    <section class="card">
+        <h2>Relative Humidity</h2>
+        <div class="metric-row">
+            <span class="metric-icon">💧</span>
+            <span id="humidity" class="value">Loading...</span>
+        </div>
+        <div id="humidityStatus" class="status-chip">Live reading</div>
+    </section>
 
-<div class="zone-card" id="northStatus">
-North
-</div>
+    <section class="card">
+        <h2>Rainfall</h2>
+        <div class="metric-row">
+            <span class="metric-icon">🌧️</span>
+            <span id="rainfall" class="value">Loading...</span>
+        </div>
+        <div id="rainfallStatus" class="status-chip">Loading...</div>
+        <div class="small">5-minute rainfall reading</div>
+    </section>
 
-<div class="zone-card" id="southStatus">
-South
-</div>
+    <section class="card">
+        <h2>2-Hour Forecast</h2>
+        <div id="forecast" class="forecast-value">Loading...</div>
+        <div id="forecastArea" class="small">Choa Chu Kang</div>
+    </section>
 
-<div class="zone-card" id="centralStatus">
-Central
-</div>
+    <section class="card">
+        <h2>Outdoor Work Advisory</h2>
+        <div id="advisory" class="advisory">Loading...</div>
+    </section>
 
-</div>
+    <section class="card">
+        <h2>Risk Matrix</h2>
 
+        <div class="risk-list">
+            <div class="risk-row">
+                <span>Heat stress</span>
+                <span id="heatRisk" class="risk-value">Loading...</span>
+            </div>
+
+            <div class="risk-row">
+                <span>Lightning</span>
+                <span id="lightningRisk" class="risk-value">Loading...</span>
+            </div>
+
+            <div class="risk-row">
+                <span>Air quality</span>
+                <span id="airRisk" class="risk-value">Loading...</span>
+            </div>
+
+            <div class="risk-row">
+                <span>Weather</span>
+                <span id="weatherRisk" class="risk-value">Loading...</span>
+            </div>
+
+            <div class="risk-row">
+                <span>Overall</span>
+                <span id="overallRisk" class="risk-value">Loading...</span>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<section class="api-panel">
+    <h3>System Status</h3>
+    <div id="apiStatus">Preparing API requests...</div>
 </section>
 
-<!-- ====================================================== -->
-<!-- SELECTED ZONE -->
-<!-- ====================================================== -->
-
-<section class="selected-location">
-
-<h2>
-Current Zone
-</h2>
-
-<h3 id="selectedRegion">
-Western Singapore
-</h3>
-
-</section>
-
-<!-- ====================================================== -->
-<!-- WEATHER CARDS -->
-<!-- ====================================================== -->
-
-<section class="weather-cards">
-
-<div class="card">
-
-<h3>Temperature</h3>
-
-<div id="temperature">
---
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Humidity</h3>
-
-<div id="humidity">
---
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Rainfall</h3>
-
-<div id="rainfall">
---
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Forecast</h3>
-
-<div id="forecast">
---
-</div>
-
-</div>
-
-</section>
-
-<!-- ====================================================== -->
-<!-- SAFETY CARDS -->
-<!-- ====================================================== -->
-
-<section class="safety-cards">
-
-<div class="card">
-
-<h3>PSI</h3>
-
-<div id="psi">
---
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>WBGT</h3>
-
-<div id="wbgt">
---
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Heat Stress</h3>
-
-<div id="heatStress">
---
-</div>
-
-</div>
-
-<div class="card">
-
-<h3>Lightning Risk</h3>
-
-<div id="lightningRisk">
---
-</div>
-
-</div>
-
-</section>
-
-<!-- ====================================================== -->
-<!-- OUTDOOR WORK ADVISORY -->
-<!-- ====================================================== -->
-
-<section class="outdoor-advisory">
-
-<div class="advisory-card">
-
-<h2>
-Outdoor Work Advisory
-</h2>
-
-<div id="workAdvisory">
-
-Loading...
-
-</div>
-
-</div>
-
-</section>
-
-<!-- ====================================================== -->
-<!-- ACTIVE WARNINGS -->
-<!-- ====================================================== -->
-
-<section class="warning-section">
-
-<h2>
-Active Alerts
-</h2>
-
-<div id="warningPanel">
-
-No Active Alerts
-
-</div>
-
-</section>
-
-<!-- ====================================================== -->
-<!-- SAFETY SUMMARY -->
-<!-- ====================================================== -->
-
-<section class="safety-summary">
-
-<h2>
-Safety Status
-</h2>
-
-<div id="safetyMessage">
-
-Loading...
-
-</div>
-
-</section>
-
-<!-- ====================================================== -->
-<!-- FOOTER -->
-<!-- ====================================================== -->
-
-<footer>
-
-Singapore Weather &
-Outdoor Work Dashboard v2.0
-
+<footer class="footer">
+    <div>Last successful dashboard update: <span id="lastUpdated">Not yet updated</span></div>
+    <div>Next scheduled refresh: <span id="nextRefresh">Not scheduled</span></div>
+    <div>Refresh interval: 5 minutes</div>
+    <div>Data source: NEA and Meteorological Service Singapore datasets via data.gov.sg</div>
+    <div>
+        Decision-support display only. Apply approved site procedures, lightning alerts,
+        risk assessments and supervisor instructions before starting or continuing outdoor work.
+    </div>
 </footer>
 
-script.jsscript>
+<script>
+"use strict";
+
+/* SETTINGS */
+
+const REFRESH_INTERVAL_MS = 300000;
+const REQUEST_GAP_MS = 1800;
+
+const API = {
+    WBGT:
+        "https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt",
+
+    LIGHTNING:
+        "https://api-open.data.gov.sg/v2/real-time/api/weather?api=lightning",
+
+    PSI:
+        "https://api-open.data.gov.sg/v2/real-time/api/psi",
+
+    FORECAST:
+        "https://api-open.data.gov.sg/v2/real-time/api/two-hr-forecast",
+
+    TEMPERATURE:
+        "https://api-open.data.gov.sg/v2/real-time/api/air-temperature",
+
+    HUMIDITY:
+        "https://api-open.data.gov.sg/v2/real-time/api/relative-humidity",
+
+    RAINFALL:
+        "https://api-open.data.gov.sg/v2/real-time/api/rainfall"
+};
+
+/* LIVE VALUES */
+
+let currentWBGT = null;
+let currentHeatStress = "";
+let lightningCount = null;
+let currentPSI = null;
+let currentForecast = "";
+let currentTemperature = null;
+let currentHumidity = null;
+let currentRainfall = null;
+
+let refreshInProgress = false;
+let nextRefreshAt = null;
+let apiMessages = [];
+
+/* HELPERS */
+
+function sleep(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+function formatSingaporeDate(date) {
+    return new Intl.DateTimeFormat("en-SG", {
+        timeZone: "Asia/Singapore",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true
+    }).format(date);
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+function setClass(id, className) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.className = className;
+    }
+}
+
+function setChip(id, text, colour) {
+    const element = document.getElementById(id);
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent = text;
+    element.style.background = colour;
+    element.style.color = colour === "#f59e0b" ? "#000000" : "#ffffff";
+}
+
+function recordApiStatus(name, message) {
+    apiMessages.push(name + ": " + message);
+    setText("apiStatus", apiMessages.join(" | "));
+}
+
+function weatherIcon(forecast) {
+    const text = String(forecast || "").toLowerCase();
+
+    if (text.includes("thunder")) {
+        return "⛈️";
+    }
+
+    if (text.includes("heavy rain")) {
+        return "🌧️";
+    }
+
+    if (text.includes("shower") || text.includes("rain")) {
+        return "🌦️";
+    }
+
+    if (text.includes("cloud")) {
+        return "☁️";
+    }
+
+    if (text.includes("hazy")) {
+        return "🌫️";
+    }
+
+    if (text.includes("night")) {
+        return "🌙";
+    }
+
+    if (text.includes("fair")) {
+        return "☀️";
+    }
+
+    return "🌤️";
+}
+
+function firstReadingValue(payload) {
+    const value =
+        payload?.data?.readings?.[0]?.data?.[0]?.value;
+
+    if (value === undefined || value === null) {
+        throw new Error("Reading value was not found");
+    }
+
+    return Number(value);
+}
+
+async function fetchJson(url, name) {
+    const response = await fetch(url, {
+        headers: {
+            "Accept": "application/json"
+        },
+        cache: "no-store"
+    });
+
+    if (response.status === 429) {
+        throw new Error("RATE_LIMITED");
+    }
+
+    if (!response.ok) {
+        throw new Error("HTTP_" + response.status);
+    }
+
+    const payload = await response.json();
+
+    if (!payload || payload.code !== 0) {
+        throw new Error(payload?.errorMsg || "Invalid API response");
+    }
+
+    recordApiStatus(name, "OK");
+    return payload;
+}
+
+function showApiFailure(cardId, statusId, name, error) {
+    if (error.message === "RATE_LIMITED") {
+        if (document.getElementById(cardId)?.textContent.includes("Loading")) {
+            setText(cardId, "API Busy");
+        }
+
+        if (statusId) {
+            setChip(statusId, "Retry next refresh", "#64748b");
+        }
+
+        recordApiStatus(name, "Rate limited");
+        return;
+    }
+
+    if (document.getElementById(cardId)?.textContent.includes("Loading")) {
+        setText(cardId, "N/A");
+    }
+
+    if (statusId) {
+        setChip(statusId, "Unavailable", "#64748b");
+    }
+
+    recordApiStatus(name, "Unavailable");
+    console.error(name + " error:", error);
+}
+
+/* CLOCK */
+
+function updateClock() {
+    setText("clock", formatSingaporeDate(new Date()));
+
+    if (nextRefreshAt) {
+        setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
+    }
+}
+
+/* WBGT */
+
+async function getWBGT() {
+    try {
+        const payload =
+            await fetchJson(API.WBGT, "WBGT");
+
+        const reading =
+            payload?.data?.records?.[0]?.item?.readings?.[0];
+
+        if (!reading) {
+            throw new Error("WBGT reading was not found");
+        }
+
+        currentWBGT = Number(reading.wbgt);
+        currentHeatStress = String(reading.heatStress || "");
+
+        setText("wbgt", currentWBGT.toFixed(1) + "°C");
+        setText("wbgtTime", "Heat stress: " + (currentHeatStress || "Not stated"));
+        setText("summaryWBGT", currentWBGT.toFixed(1) + "°C");
+
+        if (currentWBGT >= 32 || currentHeatStress.toLowerCase() === "high") {
+            setClass("wbgt", "value red-text");
+            setChip("wbgtStatus", "High", "#ef4444");
+        } else if (
+            currentWBGT >= 31 ||
+            currentHeatStress.toLowerCase() === "moderate"
+        ) {
+            setClass("wbgt", "value amber-text");
+            setChip("wbgtStatus", "Moderate", "#f59e0b");
+        } else {
+            setClass("wbgt", "value green-text");
+            setChip("wbgtStatus", "Low", "#22c55e");
+        }
+    } catch (error) {
+        showApiFailure("wbgt", "wbgtStatus", "WBGT", error);
+    }
+}
+
+/* LIGHTNING */
+
+async function getLightning() {
+    try {
+        const payload =
+            await fetchJson(API.LIGHTNING, "Lightning");
+
+        const readings =
+            payload?.data?.records?.[0]?.item?.readings;
+
+        if (!Array.isArray(readings)) {
+            throw new Error("Lightning readings were not found");
+        }
+
+        lightningCount = readings.length;
+
+        setText("lightning", String(lightningCount));
+        setText("summaryLightning", String(lightningCount));
+
+        if (lightningCount > 0) {
+            setClass("lightning", "value red-text");
+            setChip("lightningStatus", "Activity detected", "#ef4444");
+        } else {
+            setClass("lightning", "value green-text");
+            setChip("lightningStatus", "No observation", "#22c55e");
+        }
+    } catch (error) {
+        showApiFailure(
+            "lightning",
+            "lightningStatus",
+            "Lightning",
+            error
+        );
+    }
+}
+
+/* PSI WEST */
+
+async function getPSI() {
+    try {
+        const payload =
+            await fetchJson(API.PSI, "PSI");
+
+        const value =
+            payload?.data?.items?.[0]?.readings
+                ?.psi_twenty_four_hourly?.west;
+
+        if (value === undefined || value === null) {
+            throw new Error("PSI West reading was not found");
+        }
+
+        currentPSI = Number(value);
+
+        setText("psi", String(currentPSI));
+        setText("summaryPSI", String(currentPSI));
+
+        if (currentPSI > 100) {
+            setClass("psi", "value red-text");
+            setChip("psiStatus", "Unhealthy", "#ef4444");
+        } else if (currentPSI > 50) {
+            setClass("psi", "value amber-text");
+            setChip("psiStatus", "Moderate", "#f59e0b");
+        } else {
+            setClass("psi", "value green-text");
+            setChip("psiStatus", "Good", "#22c55e");
+        }
+    } catch (error) {
+        showApiFailure("psi", "psiStatus", "PSI", error);
+    }
+}
+
+/* TEMPERATURE */
+
+async function getTemperature() {
+    try {
+        const payload =
+            await fetchJson(API.TEMPERATURE, "Temperature");
+
+        currentTemperature = firstReadingValue(payload);
+
+        setText(
+            "temperature",
+            currentTemperature.toFixed(1) + "°C"
+        );
+
+        setClass("temperature", "value blue-text");
+        setChip("temperatureStatus", "Live reading", "#0284c7");
+    } catch (error) {
+        showApiFailure(
+            "temperature",
+            "temperatureStatus",
+            "Temperature",
+            error
+        );
+    }
+}
+
+/* HUMIDITY */
+
+async function getHumidity() {
+    try {
+        const payload =
+            await fetchJson(API.HUMIDITY, "Humidity");
+
+        currentHumidity = firstReadingValue(payload);
+
+        setText("humidity", currentHumidity.toFixed(1) + "%");
+        setClass("humidity", "value blue-text");
+        setChip("humidityStatus", "Live reading", "#0284c7");
+    } catch (error) {
+        showApiFailure(
+            "humidity",
+            "humidityStatus",
+            "Humidity",
+            error
+        );
+    }
+}
+
+/* RAINFALL */
+
+async function getRainfall() {
+    try {
+        const payload =
+            await fetchJson(API.RAINFALL, "Rainfall");
+
+        currentRainfall = firstReadingValue(payload);
+
+        setText("rainfall", currentRainfall.toFixed(1) + " mm");
+
+        if (currentRainfall > 0) {
+            setClass("rainfall", "value amber-text");
+            setChip("rainfallStatus", "Rain detected", "#f59e0b");
+        } else {
+            setClass("rainfall", "value green-text");
+            setChip("rainfallStatus", "No rain", "#22c55e");
+        }
+    } catch (error) {
+        showApiFailure(
+            "rainfall",
+            "rainfallStatus",
+            "Rainfall",
+            error
+        );
+    }
+}
+
+/* 2-HOUR FORECAST */
+
+async function getForecast() {
+    try {
+        const payload =
+            await fetchJson(API.FORECAST, "Forecast");
+
+        let forecasts = [];
+
+        if (Array.isArray(payload?.data?.records?.[0]?.forecasts)) {
+            forecasts = payload.data.records[0].forecasts;
+        } else if (Array.isArray(payload?.data?.items?.[0]?.forecasts)) {
+            forecasts = payload.data.items[0].forecasts;
+        }
+
+        if (forecasts.length === 0) {
+            throw new Error("Forecast list was not found");
+        }
+
+        const selected =
+            forecasts.find(item => item.area === "Choa Chu Kang") ||
+            forecasts.find(item => item.area === "Tengah") ||
+            forecasts[0];
+
+        currentForecast =
+            String(selected?.forecast || "Forecast unavailable");
+
+        const icon = weatherIcon(currentForecast);
+
+        setText("forecast", icon + " " + currentForecast);
+        setText("forecastArea", selected?.area || "Available area");
+        setText("summaryForecast", icon + " " + currentForecast);
+    } catch (error) {
+        showApiFailure("forecast", null, "Forecast", error);
+    }
+}
+
+/* VISUAL RISK AND SAFETY LOGIC */
+
+function updateSafetyVisuals() {
+    const forecastLower =
+        String(currentForecast || "").toLowerCase();
+
+    const forecastWarning =
+        forecastLower.includes("shower") ||
+        forecastLower.includes("thunder") ||
+        forecastLower.includes("rain");
+
+    let heatRisk = "UNKNOWN";
+    let airRisk = "UNKNOWN";
+    let observedLightningRisk = "UNKNOWN";
+    let weatherRisk = "UNKNOWN";
+    let overallLevel = "GREEN";
+
+    if (currentWBGT !== null) {
+        heatRisk =
+            currentWBGT >= 32
+                ? "HIGH"
+                : currentWBGT >= 31
+                    ? "MODERATE"
+                    : "LOW";
+    }
+
+    if (currentPSI !== null) {
+        airRisk =
+            currentPSI > 100
+                ? "UNHEALTHY"
+                : currentPSI > 50
+                    ? "MODERATE"
+                    : "GOOD";
+    }
+
+    if (lightningCount !== null) {
+        observedLightningRisk =
+            lightningCount > 0 ? "ACTIVITY DETECTED" : "NONE RETURNED";
+    }
+
+    if (currentForecast) {
+        weatherRisk =
+            forecastWarning ? "MONITOR" : "NORMAL";
+    }
+
+    const redCondition =
+        lightningCount !== null && lightningCount > 0 ||
+        currentWBGT !== null && currentWBGT >= 32 ||
+        currentPSI !== null && currentPSI > 100;
+
+    const amberCondition =
+        currentWBGT !== null && currentWBGT >= 31 ||
+        currentPSI !== null && currentPSI > 50 ||
+        forecastWarning ||
+        currentRainfall !== null && currentRainfall > 0;
+
+    if (redCondition) {
+        overallLevel = "RED";
+    } else if (amberCondition) {
+        overallLevel = "AMBER";
+    }
+
+    setText("heatRisk", heatRisk);
+    setText("lightningRisk", observedLightningRisk);
+    setText("airRisk", airRisk);
+    setText("weatherRisk", weatherRisk);
+    setText("overallRisk", overallLevel);
+
+    const riskIds = [
+        ["heatRisk", heatRisk === "HIGH" ? "red" :
+            heatRisk === "MODERATE" ? "amber" : "green"],
+
+        ["lightningRisk",
+            observedLightningRisk === "ACTIVITY DETECTED" ? "red" : "green"],
+
+        ["airRisk", airRisk === "UNHEALTHY" ? "red" :
+            airRisk === "MODERATE" ? "amber" : "green"],
+
+        ["weatherRisk", weatherRisk === "MONITOR" ? "amber" : "green"],
+
+        ["overallRisk", overallLevel.toLowerCase()]
+    ];
+
+    riskIds.forEach(([id, level]) => {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            return;
+        }
+
+        element.className =
+            "risk-value " +
+            (level === "red"
+                ? "red-text"
+                : level === "amber"
+                    ? "amber-text"
+                    : "green-text");
+    });
+
+    const banner = document.getElementById("banner");
+    const advisory = document.getElementById("advisory");
+
+    if (overallLevel === "RED") {
+        banner.textContent = "🔴 STOP WORK / REVIEW ACTIVITIES";
+        banner.style.background = "#ef4444";
+        banner.style.color = "#ffffff";
+
+        advisory.innerHTML =
+            "❌ Review roof work<br>" +
+            "❌ Review ladder and work-at-height activities<br>" +
+            "❌ Review open-field activities<br>" +
+            "❌ Review outdoor events and sports<br>" +
+            "✅ Apply the relevant site emergency or stop-work procedure";
+    } else if (overallLevel === "AMBER") {
+        banner.textContent = "🟠 PROCEED WITH CONTROLS";
+        banner.style.background = "#f59e0b";
+        banner.style.color = "#000000";
+
+        advisory.innerHTML =
+            "⚠ Monitor live conditions<br>" +
+            "⚠ Apply hydration and rest controls<br>" +
+            "⚠ Confirm shelter arrangements<br>" +
+            "⚠ Review planned outdoor activities";
+    } else {
+        banner.textContent = "🟢 SAFE TO PROCEED";
+        banner.style.background = "#22c55e";
+        banner.style.color = "#000000";
+
+        advisory.innerHTML =
+            "✅ Outdoor work may proceed under approved controls<br>" +
+            "✅ Continue weather monitoring<br>" +
+            "✅ Maintain hydration<br>" +
+            "✅ Follow the approved risk assessment and work procedure";
+    }
+}
+
+/* CONTROLLED REFRESH */
+
+async function refreshDashboard() {
+    if (refreshInProgress) {
+        return;
+    }
+
+    refreshInProgress = true;
+    apiMessages = [];
+    setText("apiStatus", "Refreshing live data...");
+
+    const requests = [
+        getWBGT,
+        getLightning,
+        getPSI,
+        getTemperature,
+        getHumidity,
+        getRainfall,
+        getForecast
+    ];
+
+    for (let index = 0; index < requests.length; index += 1) {
+        await requests[index]();
+
+        updateSafetyVisuals();
+
+        if (index < requests.length - 1) {
+            await sleep(REQUEST_GAP_MS);
+        }
+    }
+
+    const completedAt = new Date();
+
+    setText("lastUpdated", formatSingaporeDate(completedAt));
+
+    nextRefreshAt =
+        new Date(completedAt.getTime() + REFRESH_INTERVAL_MS);
+
+    setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
+
+    refreshInProgress = false;
+}
+
+/* START */
+
+document.addEventListener("DOMContentLoaded", function () {
+    updateClock();
+    refreshDashboard();
+
+    setInterval(updateClock, 1000);
+    setInterval(refreshDashboard, REFRESH_INTERVAL_MS);
+});
+</script>
 
 </body>
 </html>
+
+✕Merlin
