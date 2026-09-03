@@ -494,6 +494,8 @@ const API = {
 
 /* LIVE VALUES */
 
+let currentZone = "west";
+
 let currentWBGT = null;
 let currentHeatStress = "";
 let lightningCount = null;
@@ -749,8 +751,9 @@ async function getPSI() {
             await fetchJson(API.PSI, "PSI");
 
         const value =
-            payload?.data?.items?.[0]?.readings
-                ?.psi_twenty_four_hourly?.west;
+    payload.data.items?.[0]?.readings
+    ?.psi_twenty_four_hour?.[currentZone];
+`
 
         if (value === undefined || value === null) {
             throw new Error("PSI West reading was not found");
