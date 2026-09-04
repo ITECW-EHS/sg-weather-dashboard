@@ -697,18 +697,26 @@ async function fetchJson(url, name) {
 }
 
 function showApiFailure(cardId, statusId, name, error) {
+
+    clearFailedMetric(name);
+
     if (error.message === "RATE_LIMITED") {
-        if (document.getElementById(cardId)?.textContent.includes("Loading")) {
-            setText(cardId, "API Busy");
-        }
 
-        if (statusId) {
-            setChip(statusId, "Retry next refresh", "#64748b");
-        }
-
-        recordApiStatus(name, "Rate limited");
-        return;
+    if (cardId) {
+        setText(cardId, "API Busy");
     }
+
+    if (statusId) {
+        setChip(
+            statusId,
+            "Retry next refresh",
+            "#64748b"
+        );
+    }
+
+    recordApiStatus(name, "Rate limited");
+    return;
+}
 
     if (cardId) {
 
@@ -728,6 +736,57 @@ function showApiFailure(cardId, statusId, name, error) {
     console.error(name + " error:", error);
 }
 
+/* CLEAR FAILED METRIC */
+
+function clearFailedMetric(name) {
+
+    switch (name) {
+
+        case "WBGT":
+            currentWBGT = null;
+            currentHeatStress = "";
+            setText("summaryWBGT", "N/A");
+            break;
+
+        case "Lightning":
+            lightningCount = null;
+            setText("summaryLightning", "N/A");
+
+            document
+                .getElementById("lightningIcon")
+                ?.classList.remove("lightning-alert");
+
+            document
+                .getElementById("lightning")
+                ?.classList.remove("lightning-alert");
+            break;
+
+        case "PSI":
+            currentPSI = null;
+            setText("summaryPSI", "N/A");
+            break;
+
+        case "Temperature":
+            currentTemperature = null;
+            break;
+
+        case "Humidity":
+            currentHumidity = null;
+            break;
+
+        case "Rainfall":
+            currentRainfall = null;
+            break;
+
+        case "Forecast":
+            currentForecast = "";
+            setText("summaryForecast", "N/A");
+            setText("forecastArea", "Data unavailable");
+            break;
+    }
+
+}
+    
 /* CLOCK */
 
 function updateClock() {
@@ -1040,6 +1099,8 @@ const selected =
 
 if (!selected) {
 
+    currentForecast = "";
+    
     setText(
         "forecast",
         "Forecast unavailable"
