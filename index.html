@@ -834,7 +834,18 @@ else {
     );
 
 }
+    }
+    catch (error) {
 
+        showApiFailure(
+            "lightning",
+            "lightningStatus",
+            "Lightning",
+            error
+        );
+
+    }
+}
 
 /* PSI WEST */
 
