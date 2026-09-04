@@ -561,6 +561,7 @@ let currentHumidity = null;
 let currentRainfall = null;
 
 let refreshInProgress = false;
+let pendingRefresh = false;
 let nextRefreshAt = null;
 let apiMessages = [];
 
@@ -1277,8 +1278,12 @@ else {
 
 async function refreshDashboard() {
     if (refreshInProgress) {
-        return;
-    }
+
+    pendingRefresh = true;
+
+    return;
+
+}
 
     refreshInProgress = true;
     apiMessages = [];
@@ -1314,6 +1319,13 @@ async function refreshDashboard() {
     setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
 
     refreshInProgress = false;
+
+if (pendingRefresh) {
+
+    pendingRefresh = false;
+
+    refreshDashboard();
+
 }
 
 /* START */
