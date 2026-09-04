@@ -854,14 +854,13 @@ async function getPSI() {
         const payload =
     await fetchJson(API.PSI, "PSI");
 
-console.log("PSI PAYLOAD", payload);
+
 
         const value =
     payload.data.items?.[0]?.readings
     ?.psi_twenty_four_hourly?.[currentZone];
 
-console.log("PSI REGION:", currentZone);
-console.log("PSI VALUE:", value);
+
 
 
         if (value === undefined || value === null) {
@@ -1018,20 +1017,6 @@ const selected =
     forecasts.find(
         item => item.area === targetArea
     ) || forecasts[0];
-
-console.log(
-    "FORECAST AREA:",
-    targetArea
-);
-
-console.log(
-    "FORECAST VALUE:",
-    selected?.forecast
-);
-
-currentForecast =
-    String(selected?.forecast || "Forecast unavailable");
-
 
         currentForecast =
             String(selected?.forecast || "Forecast unavailable");
