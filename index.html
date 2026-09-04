@@ -710,9 +710,15 @@ function showApiFailure(cardId, statusId, name, error) {
         return;
     }
 
-    if (document.getElementById(cardId)?.textContent.includes("Loading")) {
-        setText(cardId, "N/A");
-    }
+    if (cardId) {
+
+    setText(
+        cardId,
+        "N/A"
+    );
+
+}
+
 
     if (statusId) {
         setChip(statusId, "Unavailable", "#64748b");
@@ -873,7 +879,9 @@ async function getPSI() {
 
 
         if (value === undefined || value === null) {
-            throw new Error("PSI West reading was not found");
+            throw new Error(
+    `PSI ${currentZone} reading was not found`
+);
         }
 
         currentPSI = Number(value);
