@@ -1058,13 +1058,29 @@ function updateSafetyVisuals() {
     }
 
     if (currentPSI !== null) {
-        airRisk =
-            currentPSI > 100
-                ? "UNHEALTHY"
-                : currentPSI > 50
-                    ? "MODERATE"
-                    : "GOOD";
+
+    if(currentPSI > 300){
+
+        airRisk = "HAZARDOUS";
+
     }
+    else if(currentPSI > 200){
+
+        airRisk = "VERY UNHEALTHY";
+
+    }
+    else if(currentPSI > 100){
+
+        airRisk = "UNHEALTHY";
+
+    }
+    else{
+
+        airRisk = "GOOD / MODERATE";
+
+    }
+
+}
 
     if (lightningCount !== null) {
         observedLightningRisk =
@@ -1079,11 +1095,11 @@ function updateSafetyVisuals() {
     const redCondition =
         lightningCount !== null && lightningCount > 0 ||
         currentWBGT !== null && currentWBGT >= 32 ||
-        currentPSI !== null && currentPSI > 100;
+        currentPSI !== null && currentPSI > 200;
 
     const amberCondition =
         currentWBGT !== null && currentWBGT >= 31 ||
-        currentPSI !== null && currentPSI > 50 ||
+        currentPSI !== null && currentPSI > 100 ||
         forecastWarning ||
         currentRainfall !== null && currentRainfall > 0;
 
@@ -1106,8 +1122,17 @@ function updateSafetyVisuals() {
         ["lightningRisk",
             observedLightningRisk === "ACTIVITY DETECTED" ? "red" : "green"],
 
-        ["airRisk", airRisk === "UNHEALTHY" ? "red" :
-            airRisk === "MODERATE" ? "amber" : "green"],
+        [
+    "airRisk",
+
+    airRisk === "HAZARDOUS"
+        ? "red"
+        : airRisk === "VERY UNHEALTHY"
+        ? "red"
+        : airRisk === "UNHEALTHY"
+        ? "amber"
+        : "green"
+],
 
         ["weatherRisk", weatherRisk === "MONITOR" ? "amber" : "green"],
 
