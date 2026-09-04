@@ -223,6 +223,26 @@ body {
     color: var(--red);
 }
 
+@keyframes lightningBlink {
+    0% { opacity: 1; }
+    50% { opacity: 0.25; }
+    100% { opacity: 1; }
+}
+
+.lightning-alert {
+    animation: lightningBlink 1s infinite;
+}
+
+@keyframes bannerBlink {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.banner-alert {
+    animation: bannerBlink 1s infinite;
+}    
+    
 .blue-text {
     color: var(--blue);
 }
@@ -360,7 +380,11 @@ body {
     <section class="card">
         <h2>Lightning Observations</h2>
         <div class="metric-row">
-            <span class="metric-icon">⚡</span>
+            <span
+    id="lightningIcon"
+    class="metric-icon">
+    ⚡
+</span>
             <span id="lightning" class="value">Loading...</span>
         </div>
         <div id="lightningStatus" class="status-chip">Loading...</div>
@@ -483,6 +507,13 @@ PSI (WEST)
 const REFRESH_INTERVAL_MS = 300000;
 const REQUEST_GAP_MS = 1800;
 
+const TEST_MODE = {
+    LIGHTNING: false,
+    PSI: false,
+    WBGT: false,
+    RAINFALL: false
+};
+    
 const API = {
     WBGT:
         "https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt",
@@ -745,27 +776,65 @@ async function getLightning() {
             throw new Error("Lightning readings were not found");
         }
 
-        lightningCount = readings.length;
+        lightningCount =
+    TEST_MODE.LIGHTNING
+        ? 5
+        : readings.length;
 
         setText("lightning", String(lightningCount));
         setText("summaryLightning", String(lightningCount));
 
-        if (lightningCount > 0) {
-            setClass("lightning", "value red-text");
-            setChip("lightningStatus", "Activity detected", "#ef4444");
-        } else {
-            setClass("lightning", "value green-text");
-            setChip("lightningStatus", "No observation", "#22c55e");
-        }
-    } catch (error) {
-        showApiFailure(
-            "lightning",
-            "lightningStatus",
-            "Lightning",
-            error
-        );
-    }
+        const lightningIcon =
+    document.getElementById("lightningIcon");
+
+const lightningValue =
+    document.getElementById("lightning");
+
+if (lightningCount > 0) {
+
+    setClass(
+        "lightning",
+        "value red-text"
+    );
+
+    setChip(
+        "lightningStatus",
+        "Activity detected",
+        "#ef4444"
+    );
+
+    lightningIcon.classList.add(
+        "lightning-alert"
+    );
+
+    lightningValue.classList.add(
+        "lightning-alert"
+    );
+
 }
+else {
+
+    setClass(
+        "lightning",
+        "value green-text"
+    );
+
+    setChip(
+        "lightningStatus",
+        "No observation",
+        "#22c55e"
+    );
+
+    lightningIcon.classList.remove(
+        "lightning-alert"
+    );
+
+    lightningValue.classList.remove(
+        "lightning-alert"
+    );
+
+}
+
 
 /* PSI WEST */
 
@@ -807,16 +876,30 @@ setText(
         setText("psi", String(currentPSI));
         setText("summaryPSI", String(currentPSI));
 
-        if (currentPSI > 100) {
-            setClass("psi", "value red-text");
-            setChip("psiStatus", "Unhealthy", "#ef4444");
-        } else if (currentPSI > 50) {
-            setClass("psi", "value amber-text");
-            setChip("psiStatus", "Moderate", "#f59e0b");
-        } else {
-            setClass("psi", "value green-text");
-            setChip("psiStatus", "Good", "#22c55e");
-        }
+        if(currentPSI > 300){
+
+    setClass("psi", "value red-text");
+    setChip("psiStatus", "Hazardous", "#7f1d1d");
+
+}
+else if(currentPSI > 200){
+
+    setClass("psi", "value red-text");
+    setChip("psiStatus", "Very Unhealthy", "#ef4444");
+
+}
+else if(currentPSI > 100){
+
+    setClass("psi", "value amber-text");
+    setChip("psiStatus", "Unhealthy", "#f59e0b");
+
+}
+else{
+
+    setClass("psi", "value green-text");
+    setChip("psiStatus", "Good / Moderate", "#22c55e");
+
+}
     } catch (error) {
         showApiFailure("psi", "psiStatus", "PSI", error);
     }
