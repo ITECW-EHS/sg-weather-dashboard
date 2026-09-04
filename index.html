@@ -546,6 +546,14 @@ const FORECAST_AREAS = {
     south: "Sentosa",
     central: "Marina Bay"
 };
+
+const FORECAST_FALLBACKS = {
+    west: ["Choa Chu Kang", "Tengah"],
+    east: ["Changi", "Tampines"],
+    north: ["Woodlands", "Yishun"],
+    south: ["Sentosa", "Bukit Merah"],
+    central: ["Marina Bay"]
+};
     
 /* LIVE VALUES */
 
@@ -1011,13 +1019,37 @@ async function getForecast() {
             throw new Error("Forecast list was not found");
         }
 
-        const targetArea =
-    FORECAST_AREAS[currentZone];
+        const preferredAreas =
+    FORECAST_FALLBACKS[currentZone] || [];
 
 const selected =
     forecasts.find(
-        item => item.area === targetArea
-    ) || forecasts[0];
+        item =>
+            preferredAreas.includes(
+                item.area
+            )
+    );
+
+if (!selected) {
+
+    setText(
+        "forecast",
+        "Forecast unavailable"
+    );
+
+    setText(
+        "forecastArea",
+        "Mapping unavailable"
+    );
+
+    setText(
+        "summaryForecast",
+        "Unavailable"
+    );
+
+    return;
+
+}
 
         currentForecast =
             String(selected?.forecast || "Forecast unavailable");
