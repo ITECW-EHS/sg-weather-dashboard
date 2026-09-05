@@ -1,6 +1,6 @@
 # Singapore Weather & Outdoor Work Dashboard
 
-Version: v2.0
+Version: v2.2.5
 
 Features
 
