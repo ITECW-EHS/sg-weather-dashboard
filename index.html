@@ -1261,7 +1261,7 @@ function updateSafetyVisuals() {
         renderDashboardHealth();
     }
 
-    if(regionRefreshInProgress){const banner=document.getElementById("banner"),advisory=document.getElementById("advisory");banner.classList.remove("banner-alert");banner.textContent="🔄 REFRESHING REGION DATA";banner.style.background="#0284c7";banner.style.color="#ffffff";advisory.innerHTML="Refreshing PSI for the selected region<br>Refreshing the regional forecast<br>Previous regional values have been cleared";setText("airRisk","REFRESHING");setText("weatherRisk","REFRESHING");setText("overallRisk","REFRESHING");["airRisk","weatherRisk","overallRisk"].forEach(id=>setClass(id,"risk-value blue-text"));return;}
+    if(regionRefreshInProgress){const banner=document.getElementById("banner"),advisory=document.getElementById("advisory");banner.classList.remove("banner-alert");banner.textContent="🔄 REFRESHING REGION DATA";banner.style.background="#0284c7";banner.style.color="#ffffff";advisory.innerHTML="🔄Refreshing PSI for the selected region<br>🔄Refreshing the regional forecast<br>🔄Previous regional values have been cleared";setText("airRisk","REFRESHING");setText("weatherRisk","REFRESHING");setText("overallRisk","REFRESHING");["airRisk","weatherRisk","overallRisk"].forEach(id=>setClass(id,"risk-value blue-text"));return;}
     
     if (!dashboardInitialised) {
 
