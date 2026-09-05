@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Singapore Weather &amp; Outdoor Work Dashboard v2.2.5</title>
+<title>Singapore Weather &amp; Outdoor Work Dashboard v2.2.5 Patch 2</title>
 
 <style>
 :root {
@@ -74,10 +74,7 @@ body {
     color: #ffffff;
 }
 
-.zone-control { display:flex; justify-content:center; align-items:center; gap:10px; margin:0 0 18px; padding:12px 14px; border:1px solid var(--card-border); border-radius:10px; background:rgba(34,57,102,.65); }
-.zone-control label { font-weight:700; }
-.zone-control select { min-width:150px; padding:8px 10px; border:1px solid var(--card-border); border-radius:8px; background:var(--card-bg); color:var(--text); font:inherit; }
-.zone-control select:focus { outline:2px solid var(--blue); outline-offset:2px; }
+.zone-control{display:flex;justify-content:center;align-items:center;gap:10px;margin:0 0 18px;padding:12px 14px;border:1px solid var(--card-border);border-radius:10px;background:rgba(34,57,102,.65)}.zone-control label{font-weight:700}.zone-control select{min-width:150px;padding:8px 10px;border:1px solid var(--card-border);border-radius:8px;background:var(--card-bg);color:var(--text);font:inherit}.zone-control select:focus{outline:2px solid var(--blue);outline-offset:2px}
 .summary-bar {
     display: grid;
     grid-template-columns: repeat(4, minmax(130px, 1fr));
@@ -314,7 +311,7 @@ body {
 <header class="header">
     <div>
         <h1>Singapore Weather &amp; Outdoor Work Dashboard</h1>
-        <div class="version">Version 2.2.5 | Multi-Zone Reliability Enhancement | Patch 1</div>
+        <div class="version">Version 2.2.5 | Multi-Zone Reliability Enhancement | Patch 2</div>
     </div>
 
     <div class="clock-panel">
@@ -322,10 +319,7 @@ body {
         <div class="small">Singapore Time</div>
     </div>
 </header>
-<section class="zone-control" aria-label="Region selection">
-<label for="zoneSelector">Region:</label>
-<select id="zoneSelector"><option value="west" selected>West</option><option value="east">East</option><option value="north">North</option><option value="south">South</option><option value="central">Central</option></select>
-</section>
+<section class="zone-control" aria-label="Region selection"><label for="zoneSelector">Region:</label><select id="zoneSelector"><option value="west" selected>West</option><option value="east">East</option><option value="north">North</option><option value="south">South</option><option value="central">Central</option></select></section>
 
 <section id="banner">CHECKING LIVE CONDITIONS</section>
 
@@ -500,8 +494,8 @@ body {
 /* =====================================================
 
 Singapore Weather & Outdoor Work Dashboard
-Version : 2.2.5
-Release : Multi-Zone Reliability Enhancement Patch 1
+Version : 2.2.5 Patch 2
+Release : System Health Synchronisation and Region Refresh Integrity
 
 Features
 ---------
@@ -583,15 +577,10 @@ const API = {
 
     
 /* FORECAST AREA MAPPING */
-const FORECAST_FALLBACKS = {
- west: ["Choa Chu Kang","Tengah","Bukit Batok","Bukit Panjang","Jurong East","Jurong West","Clementi"],
- east: ["Changi","Tampines","Pasir Ris","Bedok","Paya Lebar","Marine Parade"],
- north: ["Woodlands","Yishun","Sembawang","Mandai","Sungei Kadut","Seletar"],
- south: ["Sentosa","Bukit Merah","Queenstown","Southern Islands","Kallang"],
- central: ["City","Novena","Toa Payoh","Bishan","Bukit Timah","Tanglin","Central Water Catchment"]
-};
+const FORECAST_FALLBACKS={west:["Choa Chu Kang","Tengah","Bukit Batok","Bukit Panjang","Jurong East","Jurong West","Clementi"],east:["Changi","Tampines","Pasir Ris","Bedok","Paya Lebar","Marine Parade"],north:["Woodlands","Yishun","Sembawang","Mandai","Sungei Kadut","Seletar"],south:["Sentosa","Bukit Merah","Queenstown","Southern Islands","Kallang"],central:["City","Novena","Toa Payoh","Bishan","Bukit Timah","Tanglin","Central Water Catchment"]};
 /* LIVE VALUES */
-let currentZone = "west";
+let currentZone="west";
+let regionRefreshInProgress=false;
 let currentWBGT = null;
 let currentHeatStress = "";
 let lightningCount = null;
@@ -713,21 +702,7 @@ function renderDashboardHealth() {
 
     let state;
 
-    if (!dashboardInitialised) {
-
-        state = "🔄 Initialising";
-
-    }
-    else if (available === total) {
-
-        state = "✅ Healthy";
-
-    }
-    else {
-
-        state = "⚠️ Degraded";
-
-    }
+    if(!dashboardInitialised){state="🔄 Initialising";}else if(values.includes("LOADING")||regionRefreshInProgress){state="🔄 Refreshing";}else if(available===total){state="✅ Healthy";}else{state="⚠️ Degraded";}
 
     document.getElementById(
         "dashboardHealth"
@@ -1031,6 +1006,8 @@ function updateClock() {
 
     if (nextRefreshAt) {
         setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
+    if(currentZone===refreshZone){regionRefreshInProgress=false;}else{pendingRefresh=true;}
+    renderApiHealth();renderDashboardHealth();updateSafetyVisuals();
     }
 }
 
@@ -1164,21 +1141,7 @@ else {
 
 /* PSI WEST */
 
-async function getPSI(zone = currentZone) {
- try {
-  const payload = await fetchJson(API.PSI,"PSI");
-  const value = payload?.data?.items?.[0]?.readings?.psi_twenty_four_hourly?.[zone];
-  if (value === undefined || value === null) throw new Error(`PSI ${zone} reading was not found`);
-  currentPSI = TEST_MODE.PSI ? 350 : Number(value);
-  const zoneName=zone.toUpperCase();
-  setText("psiRegionLabel",`PSI ${zoneName}`); setText("psiRegionTitle",`PSI (${zoneName})`); setText("psiRegionDescription",`24-hour PSI, ${zoneName} region`);
-  setText("psi",String(currentPSI)); setText("summaryPSI",String(currentPSI));
-  if(currentPSI>300){setClass("psi","value red-text");setChip("psiStatus","Hazardous","#7f1d1d");}
-  else if(currentPSI>200){setClass("psi","value red-text");setChip("psiStatus","Very Unhealthy","#ef4444");}
-  else if(currentPSI>100){setClass("psi","value amber-text");setChip("psiStatus","Unhealthy","#f59e0b");}
-  else {setClass("psi","value green-text");setChip("psiStatus","Good / Moderate","#22c55e");}
- } catch(error){showApiFailure("psi","psiStatus","PSI",error);}
-}
+async function getPSI(zone=currentZone){try{const payload=await fetchJson(API.PSI,"PSI");const value=payload?.data?.items?.[0]?.readings?.psi_twenty_four_hourly?.[zone];if(value===undefined||value===null)throw new Error(`PSI ${zone} reading was not found`);currentPSI=TEST_MODE.PSI?350:Number(value);const z=zone.toUpperCase();setText("psiRegionLabel",`PSI ${z}`);setText("psiRegionTitle",`PSI (${z})`);setText("psiRegionDescription",`24-hour PSI, ${z} region`);setText("psi",String(currentPSI));setText("summaryPSI",String(currentPSI));if(currentPSI>300){setClass("psi","value red-text");setChip("psiStatus","Hazardous","#7f1d1d");}else if(currentPSI>200){setClass("psi","value red-text");setChip("psiStatus","Very Unhealthy","#ef4444");}else if(currentPSI>100){setClass("psi","value amber-text");setChip("psiStatus","Unhealthy","#f59e0b");}else{setClass("psi","value green-text");setChip("psiStatus","Good / Moderate","#22c55e");}}catch(error){showApiFailure("psi","psiStatus","PSI",error);}}
 /* TEMPERATURE */
 
 async function getTemperature() {
@@ -1260,19 +1223,7 @@ async function getRainfall() {
 
 /* 2-HOUR FORECAST */
 
-async function getForecast(zone = currentZone) {
- try {
-  const payload=await fetchJson(API.FORECAST,"Forecast"); let forecasts=[];
-  if(Array.isArray(payload?.data?.records?.[0]?.forecasts)) forecasts=payload.data.records[0].forecasts;
-  else if(Array.isArray(payload?.data?.items?.[0]?.forecasts)) forecasts=payload.data.items[0].forecasts;
-  if(!forecasts.length) throw new Error("Forecast list was not found");
-  const preferredAreas=FORECAST_FALLBACKS[zone]||[];
-  const selected=preferredAreas.map(area=>forecasts.find(item=>item.area===area)).find(Boolean);
-  if(!selected){currentForecast="";apiHealth.Forecast="MAPPING_UNAVAILABLE";renderApiHealth();recordApiStatus("Forecast",`No mapped area returned for ${zone}`);setText("forecast","Forecast unavailable");setText("forecastArea",`No ${zone.toUpperCase()} area returned`);setText("summaryForecast","Unavailable");return;}
-  currentForecast=String(selected.forecast||"Forecast unavailable"); const icon=weatherIcon(currentForecast);
-  setText("forecast",icon+" "+currentForecast);setText("forecastArea",selected.area||"Available area");setText("summaryForecast",icon+" "+currentForecast);
- } catch(error){showApiFailure("forecast",null,"Forecast",error);}
-}
+async function getForecast(zone=currentZone){try{const payload=await fetchJson(API.FORECAST,"Forecast");let forecasts=[];if(Array.isArray(payload?.data?.records?.[0]?.forecasts))forecasts=payload.data.records[0].forecasts;else if(Array.isArray(payload?.data?.items?.[0]?.forecasts))forecasts=payload.data.items[0].forecasts;if(!forecasts.length)throw new Error("Forecast list was not found");const preferred=FORECAST_FALLBACKS[zone]||[];const selected=preferred.map(area=>forecasts.find(item=>item.area===area)).find(Boolean);if(!selected){currentForecast="";apiHealth.Forecast="MAPPING_UNAVAILABLE";renderApiHealth();recordApiStatus("Forecast",`No mapped area returned for ${zone}`);setText("forecast","Forecast unavailable");setText("forecastArea",`No ${zone.toUpperCase()} area returned`);setText("summaryForecast","Unavailable");return;}currentForecast=String(selected.forecast||"Forecast unavailable");const icon=weatherIcon(currentForecast);setText("forecast",icon+" "+currentForecast);setText("forecastArea",selected.area||"Available area");setText("summaryForecast",icon+" "+currentForecast);}catch(error){showApiFailure("forecast",null,"Forecast",error);}}
 /* VISUAL RISK AND SAFETY LOGIC */
 
 function updateSafetyVisuals() {
@@ -1298,6 +1249,7 @@ function updateSafetyVisuals() {
     currentPSI === null ||
 
     currentForecast === "";
+    if(regionRefreshInProgress){const banner=document.getElementById("banner"),advisory=document.getElementById("advisory");banner.classList.remove("banner-alert");banner.textContent="🔄 REFRESHING REGION DATA";banner.style.background="#0284c7";banner.style.color="#ffffff";advisory.innerHTML="Refreshing PSI for the selected region<br>Refreshing the regional forecast<br>Previous regional values have been cleared";setText("airRisk","REFRESHING");setText("weatherRisk","REFRESHING");setText("overallRisk","REFRESHING");["airRisk","weatherRisk","overallRisk"].forEach(id=>setClass(id,"risk-value blue-text"));return;}
     
     if (!dashboardInitialised) {
 
@@ -1681,8 +1633,8 @@ try {
         "Refreshing live data..."
     );
 
-    const refreshZone = currentZone;
-    const requests = [getWBGT,getLightning,() => getPSI(refreshZone),getTemperature,getHumidity,getRainfall,() => getForecast(refreshZone)];
+    const refreshZone=currentZone;
+    const requests=[getWBGT,getLightning,()=>getPSI(refreshZone),getTemperature,getHumidity,getRainfall,()=>getForecast(refreshZone)];
 
     for (let index = 0; index < requests.length; index += 1) {
         await requests[index]();
@@ -1710,7 +1662,6 @@ setText(
     "nextRefresh",
     formatSingaporeDate(nextRefreshAt)
 );
-if(currentZone !== refreshZone){ pendingRefresh = true; }
 
 }
 finally {
@@ -1755,12 +1706,7 @@ document.addEventListener(
     }
 );
 /* REGION SELECTOR */
-document.getElementById("zoneSelector")?.addEventListener("change",function(){
- currentZone=this.value; currentPSI=null; currentForecast="";
- const z=currentZone.toUpperCase(); setText("psiRegionLabel",`PSI ${z}`);setText("psiRegionTitle",`PSI (${z})`);setText("psiRegionDescription",`24-hour PSI, ${z} region`);
- setText("summaryPSI","Refreshing...");setText("summaryForecast","Refreshing...");setText("forecast","Refreshing selected region...");setText("forecastArea",z);
- updateSafetyVisuals(); refreshDashboard();
-});
+document.getElementById("zoneSelector")?.addEventListener("change",function(){currentZone=this.value;regionRefreshInProgress=true;currentPSI=null;currentForecast="";apiHealth.PSI="LOADING";apiHealth.Forecast="LOADING";const z=currentZone.toUpperCase();setText("psiRegionLabel",`PSI ${z}`);setText("psiRegionTitle",`PSI (${z})`);setText("psiRegionDescription",`24-hour PSI, ${z} region`);setText("psi","Refreshing...");setText("summaryPSI","Refreshing...");setText("summaryForecast","Refreshing...");setText("forecast","Refreshing selected region...");setText("forecastArea",z);renderApiHealth();renderDashboardHealth();updateSafetyVisuals();refreshDashboard();});
 
 </script>
 
