@@ -487,7 +487,7 @@ PSI (WEST)
 </section>
 
 <footer class="footer">
-    <div>Last successful dashboard update: <span id="lastUpdated">Not yet updated</span></div>
+    <div>Last dashboard refresh completed: <span id="lastUpdated">Not yet updated</span></div>
     <div>Next scheduled refresh: <span id="nextRefresh">Not scheduled</span></div>
     <div>Refresh interval: 5 minutes</div>
     <div>Data source: NEA and Meteorological Service Singapore datasets via data.gov.sg</div>
@@ -539,13 +539,7 @@ const API = {
 
 /* FORECAST AREA MAPPING */
 
-const FORECAST_AREAS = {
-    west: "Choa Chu Kang",
-    east: "Changi",
-    north: "Woodlands",
-    south: "Sentosa",
-    central: "Marina Bay"
-};
+
 
 const FORECAST_FALLBACKS = {
     west: ["Choa Chu Kang", "Tengah"],
@@ -1090,12 +1084,13 @@ async function getForecast() {
     FORECAST_FALLBACKS[currentZone] || [];
 
 const selected =
-    forecasts.find(
-        item =>
-            preferredAreas.includes(
-                item.area
+    preferredAreas
+        .map(area =>
+            forecasts.find(
+                item => item.area === area
             )
-    );
+        )
+        .find(Boolean);
 
 if (!selected) {
 
@@ -1194,6 +1189,12 @@ function updateSafetyVisuals() {
             forecastWarning ? "MONITOR" : "NORMAL";
     }
 
+    const criticalDataUnavailable =
+    currentWBGT === null ||
+    lightningCount === null ||
+    currentPSI === null ||
+    currentForecast === "";
+    
     const redCondition =
         lightningCount !== null && lightningCount > 0 ||
         currentWBGT !== null && currentWBGT >= 32 ||
@@ -1206,10 +1207,25 @@ function updateSafetyVisuals() {
         currentRainfall !== null && currentRainfall > 0;
 
     if (redCondition) {
-        overallLevel = "RED";
-    } else if (amberCondition) {
-        overallLevel = "AMBER";
-    }
+
+    overallLevel = "RED";
+
+}
+else if (criticalDataUnavailable) {
+
+    overallLevel = "UNKNOWN";
+
+}
+else if (amberCondition) {
+
+    overallLevel = "AMBER";
+
+}
+else {
+
+    overallLevel = "GREEN";
+
+}
 
     setText("heatRisk", heatRisk);
     setText("lightningRisk", observedLightningRisk);
@@ -1238,7 +1254,16 @@ function updateSafetyVisuals() {
 
         ["weatherRisk", weatherRisk === "MONITOR" ? "amber" : "green"],
 
-        ["overallRisk", overallLevel.toLowerCase()]
+        [
+    "overallRisk",
+    overallLevel === "RED"
+        ? "red"
+        : overallLevel === "AMBER"
+        ? "amber"
+        : overallLevel === "UNKNOWN"
+        ? "grey"
+        : "green"
+]
     ];
 
     riskIds.forEach(([id, level]) => {
@@ -1249,12 +1274,14 @@ function updateSafetyVisuals() {
         }
 
         element.className =
-            "risk-value " +
-            (level === "red"
-                ? "red-text"
-                : level === "amber"
-                    ? "amber-text"
-                    : "green-text");
+    "risk-value " +
+    (level === "red"
+        ? "red-text"
+        : level === "amber"
+        ? "amber-text"
+        : level === "grey"
+        ? "grey-text"
+        : "green-text");
     });
 
     const banner = document.getElementById("banner");
@@ -1281,6 +1308,28 @@ function updateSafetyVisuals() {
         "⛔ Suspend outdoor sports and events<br>" +
         "✅ Move personnel to shelter<br>" +
         "✅ Follow site lightning safety procedures";
+
+}
+else if (criticalDataUnavailable) {
+
+    banner.classList.remove(
+        "banner-alert"
+    );
+
+    banner.textContent =
+        "⚪ LIVE DATA INCOMPLETE";
+
+    banner.style.background =
+        "#64748b";
+
+    banner.style.color =
+        "#ffffff";
+
+    advisory.innerHTML =
+        "⚠ One or more live data sources are unavailable<br>" +
+        "⚠ Do not interpret missing data as safe conditions<br>" +
+        "✅ Check official weather and lightning information<br>" +
+        "✅ Apply approved site procedures and supervisor instructions";
 
 }
 else if (currentPSI !== null && currentPSI > 300) {
