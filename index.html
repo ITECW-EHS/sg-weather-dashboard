@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Singapore Weather & Outdoor Work Dashboard v2.2.4</title>
+<title>Singapore Weather &amp; Outdoor Work Dashboard v2.2.5</title>
 
 <style>
 :root {
@@ -74,6 +74,19 @@ body {
     color: #ffffff;
 }
 
+.zone-control {
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+    margin: 0 0 18px; padding: 12px 14px;
+    border: 1px solid var(--card-border); border-radius: 10px;
+    background: rgba(34, 57, 102, 0.65);
+}
+.zone-control label { font-weight: 700; }
+.zone-control select {
+    min-width: 150px; padding: 8px 10px;
+    border: 1px solid var(--card-border); border-radius: 8px;
+    background: var(--card-bg); color: var(--text); font: inherit;
+}
+.zone-control select:focus { outline: 2px solid var(--blue); outline-offset: 2px; }
 .summary-bar {
     display: grid;
     grid-template-columns: repeat(4, minmax(130px, 1fr));
@@ -222,26 +235,50 @@ body {
 .red-text {
     color: var(--red);
 }
-
 @keyframes lightningBlink {
-    0% { opacity: 1; }
-    50% { opacity: 0.25; }
-    100% { opacity: 1; }
+
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.25;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
 }
 
 .lightning-alert {
-    animation: lightningBlink 1s infinite;
-}
 
+    animation: lightningBlink 1s infinite;
+
+}
 @keyframes bannerBlink {
-    0% { opacity: 1; }
-    50% { opacity: 0.6; }
-    100% { opacity: 1; }
+
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 1;
+    }
+
 }
 
 .banner-alert {
+
     animation: bannerBlink 1s infinite;
-}    
+
+}
+
+    
     
 .blue-text {
     color: var(--blue);
@@ -284,58 +321,27 @@ body {
 <body>
 
 <header class="header">
-
     <div>
-        <h1>Singapore Weather & Outdoor Work Dashboard</h1>
-        <div class="version">Version 2.2.4 | Multi-Zone & Lightning Operations Enhancement</div>
+        <h1>Singapore Weather &amp; Outdoor Work Dashboard</h1>
+        <div class="version">Version 2.2.5 | Multi-Zone Reliability Enhancement</div>
     </div>
 
     <div class="clock-panel">
         <div id="clock">Loading time...</div>
         <div class="small">Singapore Time</div>
     </div>
-
-    <div style="
-        width:100%;
-        margin-top:15px;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        gap:10px;
-        flex-wrap:wrap;
-    ">
-
-        <label for="zoneSelector">
-            Region:
-        </label>
-
-        <select id="zoneSelector">
-
-            <option value="west">
-                West
-            </option>
-
-            <option value="east">
-                East
-            </option>
-
-            <option value="north">
-                North
-            </option>
-
-            <option value="south">
-                South
-            </option>
-
-            <option value="central">
-                Central
-            </option>
-
-        </select>
-
-    </div>
-
 </header>
+
+<section class="zone-control" aria-label="Region selection">
+    <label for="zoneSelector">Region:</label>
+    <select id="zoneSelector">
+        <option value="west" selected>West</option>
+        <option value="east">East</option>
+        <option value="north">North</option>
+        <option value="south">South</option>
+        <option value="central">Central</option>
+    </select>
+</section>
 
 <section id="banner">CHECKING LIVE CONDITIONS</section>
 
@@ -346,11 +352,7 @@ body {
     </div>
 
     <div class="summary-item">
-        <span
-    id="psiRegionLabel"
-    class="summary-label">
-    PSI WEST
-</span>
+        <span id="psiRegionLabel" class="summary-label">PSI WEST</span>
         <span id="summaryPSI" class="summary-value">Loading...</span>
     </div>
 
@@ -382,7 +384,8 @@ body {
         <div class="metric-row">
             <span
     id="lightningIcon"
-    class="metric-icon">
+    class="metric-icon"
+>
     ⚡
 </span>
             <span id="lightning" class="value">Loading...</span>
@@ -392,21 +395,13 @@ body {
     </section>
 
     <section class="card">
-        <h2 id="psiRegionTitle">
-PSI (WEST)
-</h2>
-
+        <h2 id="psiRegionTitle">PSI (WEST)</h2>
         <div class="metric-row">
             <span class="metric-icon">🌫️</span>
             <span id="psi" class="value">Loading...</span>
         </div>
         <div id="psiStatus" class="status-chip">Loading...</div>
-        <div
-    id="psiRegionDescription"
-    class="small">
-    24-hour PSI, West region
-</div>
-
+        <div id="psiRegionDescription" class="small">24-hour PSI, WEST region</div>
     </section>
 
     <section class="card">
@@ -482,38 +477,101 @@ PSI (WEST)
 </main>
 
 <section class="api-panel">
-    <h3>System Status</h3>
-    <div id="apiStatus">Preparing API requests...</div>
+    <h3>System Health</h3>
+
+    <div id="apiHealth">
+        Loading health status...
+    </div>
+
+    <div id="apiStatus">
+        Preparing API requests...
+    </div>
+
+    <hr style="margin:12px 0; border-color:#365180;">
+
+<div id="dashboardHealth">
+    Initialising dashboard health...
+</div>
 </section>
 
 <footer class="footer">
-    <div>Last dashboard refresh completed: <span id="lastUpdated">Not yet updated</span></div>
+    <div>Last successful dashboard update: <span id="lastUpdated">Not yet updated</span></div>
     <div>Next scheduled refresh: <span id="nextRefresh">Not scheduled</span></div>
     <div>Refresh interval: 5 minutes</div>
     <div>Data source: NEA and Meteorological Service Singapore datasets via data.gov.sg</div>
     <div>
-        Decision-support display only. Apply approved site procedures, lightning alerts,
-        risk assessments and supervisor instructions before starting or continuing outdoor work.
-    </div>
-    <div>Created by Kelvin Siow</div>
+    Decision-support display only. Apply approved site procedures,
+    lightning alerts, risk assessments and supervisor instructions
+    before starting or continuing outdoor work.
+</div>
 
+<div>
+    Created by Kelvin Siow
+</div>
+    
 </footer>
 
 <script>
 "use strict";
+/* =====================================================
+
+Singapore Weather & Outdoor Work Dashboard
+Version : 2.2.5
+Release : Multi-Zone Reliability Enhancement
+
+Features
+---------
+- Hazardous PSI Advisory
+- Lightning Detection Banner
+- Blinking Lightning Alert
+- Risk Matrix
+- Test Mode Support
+- Live Data Incomplete Protection
+- Unknown Risk State
+- Failed API Cleanup
+- Grey Data Integrity Indicators
+- Refresh Protection Engine
+- Initialisation Screen
+- API Health Monitor
+- Dashboard Health Summary
+- Instant Refresh Update
+- Dashboard recovery from unexpected errors
+- Forecast location integrity
+
+Author
+------
+Kelvin Siow
+
+===================================================== */
+
 
 /* SETTINGS */
-
 const REFRESH_INTERVAL_MS = 300000;
 const REQUEST_GAP_MS = 1800;
 
+/* =====================================================
+   DASHBOARD TEST MODE
+
+   Purpose:
+   Simulate dashboard conditions for testing.
+
+   FALSE = Live Production Mode
+   TRUE  = Simulated Test Mode
+
+   IMPORTANT:
+   Set all test switches to FALSE before deployment.
+
+===================================================== */
+
 const TEST_MODE = {
+
     LIGHTNING: false,
     PSI: false,
     WBGT: false,
     RAINFALL: false
+
 };
-    
+
 const API = {
     WBGT:
         "https://api-open.data.gov.sg/v2/real-time/api/weather?api=wbgt",
@@ -537,10 +595,10 @@ const API = {
         "https://api-open.data.gov.sg/v2/real-time/api/rainfall"
 };
 
+    
+
+    
 /* FORECAST AREA MAPPING */
-
-
-
 const FORECAST_FALLBACKS = {
     west: ["Choa Chu Kang", "Tengah"],
     east: ["Changi", "Tampines"],
@@ -548,11 +606,9 @@ const FORECAST_FALLBACKS = {
     south: ["Sentosa", "Bukit Merah"],
     central: ["Marina Bay"]
 };
-    
+
 /* LIVE VALUES */
-
 let currentZone = "west";
-
 let currentWBGT = null;
 let currentHeatStress = "";
 let lightningCount = null;
@@ -563,10 +619,20 @@ let currentHumidity = null;
 let currentRainfall = null;
 
 let refreshInProgress = false;
+let dashboardInitialised = false;
 let pendingRefresh = false;
 let nextRefreshAt = null;
 let apiMessages = [];
-
+let apiHealth = {
+    WBGT: "LOADING",
+    Lightning: "LOADING",
+    PSI: "LOADING",
+    Forecast: "LOADING",
+    Temperature: "LOADING",
+    Humidity: "LOADING",
+    Rainfall: "LOADING"
+};
+    
 /* HELPERS */
 
 function sleep(milliseconds) {
@@ -617,6 +683,86 @@ function setChip(id, text, colour) {
 function recordApiStatus(name, message) {
     apiMessages.push(name + ": " + message);
     setText("apiStatus", apiMessages.join(" | "));
+}
+function renderApiHealth() {
+
+    const html =
+        Object.entries(apiHealth)
+            .map(([name, status]) => {
+
+                const icon =
+                    status === "OK"
+                        ? "✅"
+
+                        : status === "RATE_LIMITED"
+                        ? "⚠️"
+
+                        : status === "UNAVAILABLE"
+                        ? "❌"
+
+                        : "🔄";
+
+                return `${icon} ${name}`;
+
+            })
+            .join("<br>");
+
+    document.getElementById(
+        "apiHealth"
+    ).innerHTML = html;
+
+renderDashboardHealth();
+    
+}
+
+function renderDashboardHealth() {
+
+    const values =
+        Object.values(apiHealth);
+
+    const available =
+        values.filter(
+            status => status === "OK"
+        ).length;
+
+    const total =
+        values.length;
+
+    let state;
+
+    if (!dashboardInitialised) {
+
+        state = "🔄 Initialising";
+
+    }
+    else if (available === total) {
+
+        state = "✅ Healthy";
+
+    }
+    else {
+
+        state = "⚠️ Degraded";
+
+    }
+
+    document.getElementById(
+        "dashboardHealth"
+    ).innerHTML =
+        "Data Sources: " +
+        available +
+        "/" +
+        total +
+        " Available<br>" +
+
+        "Refresh State: " +
+        state +
+        "<br>" +
+
+        "Last Refresh: " +
+        document.getElementById(
+            "lastUpdated"
+        ).textContent;
 }
 
 function weatherIcon(forecast) {
@@ -686,48 +832,16 @@ async function fetchJson(url, name) {
         throw new Error(payload?.errorMsg || "Invalid API response");
     }
 
-    recordApiStatus(name, "OK");
-    return payload;
-}
+    apiHealth[name] = "OK";
 
-function showApiFailure(cardId, statusId, name, error) {
+renderApiHealth();
 
-    clearFailedMetric(name);
+recordApiStatus(
+    name,
+    "OK"
+);
 
-    if (error.message === "RATE_LIMITED") {
-
-    if (cardId) {
-        setText(cardId, "API Busy");
-    }
-
-    if (statusId) {
-        setChip(
-            statusId,
-            "Retry next refresh",
-            "#64748b"
-        );
-    }
-
-    recordApiStatus(name, "Rate limited");
-    return;
-}
-
-    if (cardId) {
-
-    setText(
-        cardId,
-        "N/A"
-    );
-
-}
-
-
-    if (statusId) {
-        setChip(statusId, "Unavailable", "#64748b");
-    }
-
-    recordApiStatus(name, "Unavailable");
-    console.error(name + " error:", error);
+return payload;
 }
 
 /* CLEAR FAILED METRIC */
@@ -737,49 +851,195 @@ function clearFailedMetric(name) {
     switch (name) {
 
         case "WBGT":
-            currentWBGT = null;
-            currentHeatStress = "";
-            setText("summaryWBGT", "N/A");
-            break;
+
+    currentWBGT = null;
+    currentHeatStress = "";
+
+    setText(
+        "summaryWBGT",
+        "N/A"
+    );
+
+    setClass(
+        "wbgt",
+        "value grey-text"
+    );
+
+    break;
 
         case "Lightning":
-            lightningCount = null;
-            setText("summaryLightning", "N/A");
 
-            document
-                .getElementById("lightningIcon")
-                ?.classList.remove("lightning-alert");
+    lightningCount = null;
 
-            document
-                .getElementById("lightning")
-                ?.classList.remove("lightning-alert");
-            break;
+    setText(
+        "summaryLightning",
+        "N/A"
+    );
+
+    setClass(
+        "lightning",
+        "value grey-text"
+    );
+
+    document
+        .getElementById("lightningIcon")
+        ?.classList.remove("lightning-alert");
+
+    document
+        .getElementById("lightning")
+        ?.classList.remove("lightning-alert");
+
+    break;
 
         case "PSI":
-            currentPSI = null;
-            setText("summaryPSI", "N/A");
-            break;
+
+    currentPSI = null;
+
+    setText(
+        "summaryPSI",
+        "N/A"
+    );
+
+    setClass(
+        "psi",
+        "value grey-text"
+    );
+
+    break;
+
+    case "Forecast":
+
+    currentForecast = "";
+
+    setText(
+        "summaryForecast",
+        "N/A"
+    );
+
+    setText(
+        "forecastArea",
+        "Data unavailable"
+    );
+
+    break;
 
         case "Temperature":
-            currentTemperature = null;
-            break;
+
+    currentTemperature = null;
+
+    setClass(
+        "temperature",
+        "value grey-text"
+    );
+
+    break;
 
         case "Humidity":
-            currentHumidity = null;
-            break;
+
+    currentHumidity = null;
+
+    setClass(
+        "humidity",
+        "value grey-text"
+    );
+
+    break;
 
         case "Rainfall":
-            currentRainfall = null;
-            break;
 
-        case "Forecast":
-            currentForecast = "";
-            setText("summaryForecast", "N/A");
-            setText("forecastArea", "Data unavailable");
-            break;
+    currentRainfall = null;
+
+    setClass(
+        "rainfall",
+        "value grey-text"
+    );
+
+    break;
+
     }
 
 }
+    
+function showApiFailure(
+    cardId,
+    statusId,
+    name,
+    error
+) {
+
+    clearFailedMetric(name);
+
+if (error.message === "RATE_LIMITED") {
+
+    apiHealth[name] =
+        "RATE_LIMITED";
+
+    renderApiHealth();
+
+        if (cardId) {
+
+            setText(
+                cardId,
+                "API Busy"
+            );
+
+        }
+
+        if (statusId) {
+
+            setChip(
+                statusId,
+                "Retry next refresh",
+                "#64748b"
+            );
+
+        }
+
+        recordApiStatus(
+            name,
+            "Rate limited"
+        );
+
+        return;
+
+    }
+
+    if (cardId) {
+
+        setText(
+            cardId,
+            "N/A"
+        );
+
+    }
+
+    if (statusId) {
+
+        setChip(
+            statusId,
+            "Unavailable",
+            "#64748b"
+        );
+
+    }
+
+apiHealth[name] =
+    "UNAVAILABLE";
+
+renderApiHealth();
+    
+    recordApiStatus(
+        name,
+        "Unavailable"
+    );
+
+    console.error(
+        name + " error:",
+        error
+    );
+
+}
+
     
 /* CLOCK */
 
@@ -805,7 +1065,10 @@ async function getWBGT() {
             throw new Error("WBGT reading was not found");
         }
 
-        currentWBGT = Number(reading.wbgt);
+        currentWBGT =
+    TEST_MODE.WBGT
+    ? 33.5
+    : Number(reading.wbgt);
         currentHeatStress = String(reading.heatStress || "");
 
         setText("wbgt", currentWBGT.toFixed(1) + "°C");
@@ -846,17 +1109,21 @@ async function getLightning() {
 
         lightningCount =
     TEST_MODE.LIGHTNING
-        ? 5
-        : readings.length;
+    ? 5
+    : readings.length;
 
         setText("lightning", String(lightningCount));
         setText("summaryLightning", String(lightningCount));
 
         const lightningIcon =
-    document.getElementById("lightningIcon");
+document.getElementById(
+    "lightningIcon"
+);
 
 const lightningValue =
-    document.getElementById("lightning");
+document.getElementById(
+    "lightning"
+);
 
 if (lightningCount > 0) {
 
@@ -902,16 +1169,13 @@ else {
     );
 
 }
-    }
-    catch (error) {
-
+    } catch (error) {
         showApiFailure(
             "lightning",
             "lightningStatus",
             "Lightning",
             error
         );
-
     }
 }
 
@@ -919,72 +1183,36 @@ else {
 
 async function getPSI() {
     try {
-        const payload =
-    await fetchJson(API.PSI, "PSI");
-
-
-
-        const value =
-    payload.data.items?.[0]?.readings
-    ?.psi_twenty_four_hourly?.[currentZone];
-
-
-
-
+        const payload = await fetchJson(API.PSI, "PSI");
+        const value = payload?.data?.items?.[0]?.readings
+            ?.psi_twenty_four_hourly?.[currentZone];
         if (value === undefined || value === null) {
-            throw new Error(
-    `PSI ${currentZone} reading was not found`
-);
+            throw new Error(`PSI ${currentZone} reading was not found`);
         }
-
-        currentPSI = Number(value);
-setText(
-    "psiRegionLabel",
-    `PSI ${currentZone.toUpperCase()}`
-);
-
-setText(
-    "psiRegionTitle",
-    `PSI (${currentZone.toUpperCase()})`
-);
-
-setText(
-    "psiRegionDescription",
-    `24-hour PSI, ${currentZone.toUpperCase()} region`
-);
-        
+        currentPSI = TEST_MODE.PSI ? 350 : Number(value);
+        const zoneName = currentZone.toUpperCase();
+        setText("psiRegionLabel", `PSI ${zoneName}`);
+        setText("psiRegionTitle", `PSI (${zoneName})`);
+        setText("psiRegionDescription", `24-hour PSI, ${zoneName} region`);
         setText("psi", String(currentPSI));
         setText("summaryPSI", String(currentPSI));
-
-        if(currentPSI > 300){
-
-    setClass("psi", "value red-text");
-    setChip("psiStatus", "Hazardous", "#7f1d1d");
-
-}
-else if(currentPSI > 200){
-
-    setClass("psi", "value red-text");
-    setChip("psiStatus", "Very Unhealthy", "#ef4444");
-
-}
-else if(currentPSI > 100){
-
-    setClass("psi", "value amber-text");
-    setChip("psiStatus", "Unhealthy", "#f59e0b");
-
-}
-else{
-
-    setClass("psi", "value green-text");
-    setChip("psiStatus", "Good / Moderate", "#22c55e");
-
-}
+        if (currentPSI > 300) {
+            setClass("psi", "value red-text");
+            setChip("psiStatus", "Hazardous", "#7f1d1d");
+        } else if (currentPSI > 200) {
+            setClass("psi", "value red-text");
+            setChip("psiStatus", "Very Unhealthy", "#ef4444");
+        } else if (currentPSI > 100) {
+            setClass("psi", "value amber-text");
+            setChip("psiStatus", "Unhealthy", "#f59e0b");
+        } else {
+            setClass("psi", "value green-text");
+            setChip("psiStatus", "Good / Moderate", "#22c55e");
+        }
     } catch (error) {
         showApiFailure("psi", "psiStatus", "PSI", error);
     }
 }
-
 /* TEMPERATURE */
 
 async function getTemperature() {
@@ -1040,7 +1268,10 @@ async function getRainfall() {
         const payload =
             await fetchJson(API.RAINFALL, "Rainfall");
 
-        currentRainfall = firstReadingValue(payload);
+        currentRainfall =
+    TEST_MODE.RAINFALL
+    ? 20
+    : firstReadingValue(payload);
 
         setText("rainfall", currentRainfall.toFixed(1) + " mm");
 
@@ -1065,69 +1296,36 @@ async function getRainfall() {
 
 async function getForecast() {
     try {
-        const payload =
-            await fetchJson(API.FORECAST, "Forecast");
-
+        const payload = await fetchJson(API.FORECAST, "Forecast");
         let forecasts = [];
-
         if (Array.isArray(payload?.data?.records?.[0]?.forecasts)) {
             forecasts = payload.data.records[0].forecasts;
         } else if (Array.isArray(payload?.data?.items?.[0]?.forecasts)) {
             forecasts = payload.data.items[0].forecasts;
         }
-
         if (forecasts.length === 0) {
             throw new Error("Forecast list was not found");
         }
-
-        const preferredAreas =
-    FORECAST_FALLBACKS[currentZone] || [];
-
-const selected =
-    preferredAreas
-        .map(area =>
-            forecasts.find(
-                item => item.area === area
-            )
-        )
-        .find(Boolean);
-
-if (!selected) {
-
-    currentForecast = "";
-    
-    setText(
-        "forecast",
-        "Forecast unavailable"
-    );
-
-    setText(
-        "forecastArea",
-        "Mapping unavailable"
-    );
-
-    setText(
-        "summaryForecast",
-        "Unavailable"
-    );
-
-    return;
-
-}
-
-        currentForecast =
-            String(selected?.forecast || "Forecast unavailable");
-
+        const preferredAreas = FORECAST_FALLBACKS[currentZone] || [];
+        const selected = preferredAreas
+            .map(area => forecasts.find(item => item.area === area))
+            .find(Boolean);
+        if (!selected) {
+            currentForecast = "";
+            setText("forecast", "Forecast unavailable");
+            setText("forecastArea", "Mapping unavailable");
+            setText("summaryForecast", "Unavailable");
+            return;
+        }
+        currentForecast = String(selected.forecast || "Forecast unavailable");
         const icon = weatherIcon(currentForecast);
-
         setText("forecast", icon + " " + currentForecast);
-        setText("forecastArea", selected?.area || "Available area");
+        setText("forecastArea", selected.area || "Available area");
         setText("summaryForecast", icon + " " + currentForecast);
     } catch (error) {
         showApiFailure("forecast", null, "Forecast", error);
     }
 }
-
 /* VISUAL RISK AND SAFETY LOGIC */
 
 function updateSafetyVisuals() {
@@ -1144,6 +1342,55 @@ function updateSafetyVisuals() {
     let observedLightningRisk = "UNKNOWN";
     let weatherRisk = "UNKNOWN";
     let overallLevel = "GREEN";
+    const criticalDataUnavailable =
+
+    currentWBGT === null ||
+
+    lightningCount === null ||
+
+    currentPSI === null ||
+
+    currentForecast === "";
+    
+    if (!dashboardInitialised) {
+
+    if (
+        currentWBGT === null ||
+        lightningCount === null ||
+        currentPSI === null ||
+        currentForecast === ""
+    ) {
+
+        const banner =
+            document.getElementById("banner");
+
+        const advisory =
+            document.getElementById("advisory");
+
+        banner.classList.remove(
+            "banner-alert"
+        );
+
+        banner.textContent =
+            "🔄 INITIALISING LIVE DATA";
+
+        banner.style.background =
+            "#0284c7";
+
+        banner.style.color =
+            "#ffffff";
+
+        advisory.innerHTML =
+            "Loading weather feeds<br>" +
+            "Loading lightning observations<br>" +
+            "Loading PSI readings<br>" +
+            "Preparing dashboard status";
+
+        return;
+    }
+
+    dashboardInitialised = true;
+}
 
     if (currentWBGT !== null) {
         heatRisk =
@@ -1155,29 +1402,28 @@ function updateSafetyVisuals() {
     }
 
     if (currentPSI !== null) {
+        if(currentPSI > 300){
 
-    if(currentPSI > 300){
-
-        airRisk = "HAZARDOUS";
-
-    }
-    else if(currentPSI > 200){
-
-        airRisk = "VERY UNHEALTHY";
-
-    }
-    else if(currentPSI > 100){
-
-        airRisk = "UNHEALTHY";
-
-    }
-    else{
-
-        airRisk = "GOOD / MODERATE";
-
-    }
+    airRisk = "HAZARDOUS";
 
 }
+else if(currentPSI > 200){
+
+    airRisk = "VERY UNHEALTHY";
+
+}
+else if(currentPSI > 100){
+
+    airRisk = "UNHEALTHY";
+
+}
+else{
+
+    airRisk = "GOOD / MODERATE";
+
+}
+
+    }
 
     if (lightningCount !== null) {
         observedLightningRisk =
@@ -1189,12 +1435,6 @@ function updateSafetyVisuals() {
             forecastWarning ? "MONITOR" : "NORMAL";
     }
 
-    const criticalDataUnavailable =
-    currentWBGT === null ||
-    lightningCount === null ||
-    currentPSI === null ||
-    currentForecast === "";
-    
     const redCondition =
         lightningCount !== null && lightningCount > 0 ||
         currentWBGT !== null && currentWBGT >= 32 ||
@@ -1234,36 +1474,78 @@ else {
     setText("overallRisk", overallLevel);
 
     const riskIds = [
-        ["heatRisk", heatRisk === "HIGH" ? "red" :
-            heatRisk === "MODERATE" ? "amber" : "green"],
+        [
+    "heatRisk",
 
-        ["lightningRisk",
-            observedLightningRisk === "ACTIVITY DETECTED" ? "red" : "green"],
+    heatRisk === "UNKNOWN"
+        ? "grey"
+
+        : heatRisk === "HIGH"
+        ? "red"
+
+        : heatRisk === "MODERATE"
+        ? "amber"
+
+        : "green"
+],
+
+        [
+    "lightningRisk",
+
+    observedLightningRisk === "UNKNOWN"
+        ? "grey"
+
+        : observedLightningRisk === "ACTIVITY DETECTED"
+        ? "red"
+
+        : "green"
+],
 
         [
     "airRisk",
 
-    airRisk === "HAZARDOUS"
+    airRisk === "UNKNOWN"
+        ? "grey"
+
+        : airRisk === "HAZARDOUS"
         ? "red"
+
         : airRisk === "VERY UNHEALTHY"
         ? "red"
+
         : airRisk === "UNHEALTHY"
         ? "amber"
+
         : "green"
 ],
 
-        ["weatherRisk", weatherRisk === "MONITOR" ? "amber" : "green"],
+        [
+    "weatherRisk",
+
+    weatherRisk === "UNKNOWN"
+        ? "grey"
+
+        : weatherRisk === "MONITOR"
+        ? "amber"
+
+        : "green"
+],
 
         [
     "overallRisk",
+
     overallLevel === "RED"
         ? "red"
+
         : overallLevel === "AMBER"
         ? "amber"
+
         : overallLevel === "UNKNOWN"
         ? "grey"
+
         : "green"
 ]
+
     ];
 
     riskIds.forEach(([id, level]) => {
@@ -1274,33 +1556,36 @@ else {
         }
 
         element.className =
-    "risk-value " +
-    (level === "red"
-        ? "red-text"
-        : level === "amber"
-        ? "amber-text"
-        : level === "grey"
-        ? "grey-text"
-        : "green-text");
+            "risk-value " +
+            (level === "red"
+    ? "red-text"
+
+    : level === "amber"
+    ? "amber-text"
+
+    : level === "grey"
+    ? "grey-text"
+
+    : "green-text");
     });
 
-    const banner = document.getElementById("banner");
-    const advisory = document.getElementById("advisory");
+const banner = document.getElementById("banner");
+const advisory = document.getElementById("advisory");
 
-    if (lightningCount !== null && lightningCount > 0) {
+if(lightningCount !== null && lightningCount > 0){
 
     banner.classList.add(
-        "banner-alert"
-    );
-
+    "banner-alert"
+);
+    
     banner.textContent =
-        "⚡ LIGHTNING DETECTED";
+    "⚡ LIGHTNING DETECTED";
 
     banner.style.background =
-        "#dc2626";
+    "#dc2626";
 
     banner.style.color =
-        "#ffffff";
+    "#ffffff";
 
     advisory.innerHTML =
         "⛔ Suspend roof works<br>" +
@@ -1310,7 +1595,32 @@ else {
         "✅ Follow site lightning safety procedures";
 
 }
-else if (criticalDataUnavailable) {
+
+else if(currentPSI !== null && currentPSI > 300){
+
+    banner.classList.remove(
+    "banner-alert"
+);
+
+    banner.textContent =
+    "🚫 HAZARDOUS AIR QUALITY";
+
+    banner.style.background =
+    "#7f1d1d";
+
+    banner.style.color =
+    "#ffffff";
+
+    advisory.innerHTML =
+        "🚫 Minimise Outdoor Activity<br>" +
+        "🚫 Avoid prolonged outdoor exposure<br>" +
+        "🚫 Review all non-essential outdoor work<br>" +
+        "✅ Consider indoor alternatives<br>" +
+        "✅ Monitor official haze advisories";
+
+}
+
+else if (overallLevel === "UNKNOWN") {
 
     banner.classList.remove(
         "banner-alert"
@@ -1326,72 +1636,50 @@ else if (criticalDataUnavailable) {
         "#ffffff";
 
     advisory.innerHTML =
-        "⚠️ One or more live data sources are unavailable<br>" +
+        "⚠️ One or more critical data sources are unavailable<br>" +
         "⚠️ Do not interpret missing data as safe conditions<br>" +
         "✅ Check official weather and lightning information<br>" +
         "✅ Apply approved site procedures and supervisor instructions";
 
 }
-else if (currentPSI !== null && currentPSI > 300) {
-
-    banner.classList.remove(
-        "banner-alert"
-    );
-
-    banner.textContent =
-        "🚫 HAZARDOUS AIR QUALITY";
-
-    banner.style.background =
-        "#7f1d1d";
-
-    banner.style.color =
-        "#ffffff";
-
-    advisory.innerHTML =
-        "🚫 Minimise outdoor activity<br>" +
-        "🚫 Avoid prolonged exposure<br>" +
-        "🚫 Review non-essential outdoor work<br>" +
-        "✅ Consider indoor alternatives<br>" +
-        "✅ Monitor official haze advisories";
-
-}
+    
 else if (overallLevel === "RED") {
 
     banner.classList.remove(
-        "banner-alert"
-    );
-
+    "banner-alert"
+);
+    
     banner.textContent =
-        "🔴 STOP WORK / REVIEW ACTIVITIES";
+    "🔴 STOP WORK / REVIEW ACTIVITIES";
 
     banner.style.background =
-        "#ef4444";
+    "#ef4444";
 
     banner.style.color =
-        "#ffffff";
+    "#ffffff";
 
     advisory.innerHTML =
     "❌ Review outdoor work activities<br>" +
     "❌ Review work at height activities<br>" +
     "❌ Review outdoor events and sports<br>" +
-    "✅ Implement risk controls<br>" +
-    "✅ Brief supervisors and affected personnel";
+    "✅ Implement control measures<br>" +
+    "✅ Apply site emergency procedures where required";
 
 }
 else if (overallLevel === "AMBER") {
 
     banner.classList.remove(
-        "banner-alert"
-    );
-
+    "banner-alert"
+);
+    
     banner.textContent =
-        "🟠 PROCEED WITH CONTROLS";
+    "🟠 PROCEED WITH CONTROLS";
 
     banner.style.background =
-        "#f59e0b";
+    "#f59e0b";
 
     banner.style.color =
-        "#000000";
+    "#000000";
 
     advisory.innerHTML =
         "⚠️ Monitor live conditions<br>" +
@@ -1401,29 +1689,29 @@ else if (overallLevel === "AMBER") {
 
 }
 else {
-    banner.classList.remove(
-        "banner-alert"
-    );
 
+    banner.classList.remove(
+    "banner-alert"
+);
+    
     banner.textContent =
-        "🟢 SAFE TO PROCEED";
+    "🟢 SAFE TO PROCEED";
 
     banner.style.background =
-        "#22c55e";
+    "#22c55e";
 
     banner.style.color =
-        "#000000";
+    "#000000";
 
     advisory.innerHTML =
         "✅ Outdoor work may proceed under approved controls<br>" +
         "✅ Continue weather monitoring<br>" +
         "✅ Maintain hydration<br>" +
-        "✅ Follow approved work procedures";
+        "✅ Follow the approved risk assessments and work procedures";
 
 }
 
 }
-    
 /* CONTROLLED REFRESH */
 
 async function refreshDashboard() {
@@ -1433,19 +1721,18 @@ async function refreshDashboard() {
         pendingRefresh = true;
 
         return;
-
     }
 
     refreshInProgress = true;
 
-    try {
+try {
 
-        apiMessages = [];
+    apiMessages = [];
 
-        setText(
-            "apiStatus",
-            "Refreshing live data..."
-        );
+    setText(
+        "apiStatus",
+        "Refreshing live data..."
+    );
 
     const requests = [
         getWBGT,
@@ -1471,12 +1758,20 @@ async function refreshDashboard() {
 
     setText("lastUpdated", formatSingaporeDate(completedAt));
 
+    renderDashboardHealth();
+
     nextRefreshAt =
-        new Date(completedAt.getTime() + REFRESH_INTERVAL_MS);
+    new Date(
+        completedAt.getTime() +
+        REFRESH_INTERVAL_MS
+    );
 
-    setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
+setText(
+    "nextRefresh",
+    formatSingaporeDate(nextRefreshAt)
+);
 
-    }
+}
 finally {
 
     refreshInProgress = false;
@@ -1490,36 +1785,41 @@ finally {
     }
 
 }
-
-/* Close refreshDashboard() */
-
 }
-    
+
 /* START */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
-    updateClock();
+        updateClock();
 
-    refreshDashboard();
+        renderApiHealth();
 
-    setInterval(updateClock, 1000);
-    setInterval(refreshDashboard, REFRESH_INTERVAL_MS);
+        renderDashboardHealth();
 
-});
+        refreshDashboard();
 
+        setInterval(
+            updateClock,
+            1000
+        );
+
+        setInterval(
+            refreshDashboard,
+            REFRESH_INTERVAL_MS
+        );
+
+    }
+);
 /* REGION SELECTOR */
-
-document.getElementById("zoneSelector")
-.addEventListener("change", function() {
-
+document.getElementById("zoneSelector")?.addEventListener("change", function () {
     currentZone = this.value;
     refreshDashboard();
-
 });
+
 </script>
 
 </body>
 </html>
-
-✕Merlin
