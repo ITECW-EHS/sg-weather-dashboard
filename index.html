@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Singapore Weather &amp; Outdoor Work Dashboard v2.2.5 Patch 2</title>
+<title>Singapore Weather &amp; Outdoor Work Dashboard v2.2.5 Patch 2.1</title>
 
 <style>
 :root {
@@ -311,7 +311,7 @@ body {
 <header class="header">
     <div>
         <h1>Singapore Weather &amp; Outdoor Work Dashboard</h1>
-        <div class="version">Version 2.2.5 | Multi-Zone Reliability Enhancement | Patch 2</div>
+        <div class="version">Version 2.2.5 | Multi-Zone Reliability Enhancement | Patch 2.1</div>
     </div>
 
     <div class="clock-panel">
@@ -494,8 +494,8 @@ body {
 /* =====================================================
 
 Singapore Weather & Outdoor Work Dashboard
-Version : 2.2.5 Patch 2
-Release : System Health Synchronisation and Region Refresh Integrity
+Version : 2.2.5 Patch 2.1
+Release : Region Refresh State Completion Fix
 
 Features
 ---------
@@ -1249,6 +1249,18 @@ function updateSafetyVisuals() {
     currentPSI === null ||
 
     currentForecast === "";
+    /* PATCH 2.1: clear the transition as soon as both regional feeds are ready. */
+    const regionalFeedsReady =
+        currentPSI !== null &&
+        currentForecast !== "" &&
+        apiHealth.PSI === "OK" &&
+        apiHealth.Forecast === "OK";
+    if (regionRefreshInProgress && regionalFeedsReady) {
+        regionRefreshInProgress = false;
+        renderApiHealth();
+        renderDashboardHealth();
+    }
+
     if(regionRefreshInProgress){const banner=document.getElementById("banner"),advisory=document.getElementById("advisory");banner.classList.remove("banner-alert");banner.textContent="🔄 REFRESHING REGION DATA";banner.style.background="#0284c7";banner.style.color="#ffffff";advisory.innerHTML="Refreshing PSI for the selected region<br>Refreshing the regional forecast<br>Previous regional values have been cleared";setText("airRisk","REFRESHING");setText("weatherRisk","REFRESHING");setText("overallRisk","REFRESHING");["airRisk","weatherRisk","overallRisk"].forEach(id=>setClass(id,"risk-value blue-text"));return;}
     
     if (!dashboardInitialised) {
