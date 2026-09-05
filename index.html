@@ -1427,17 +1427,25 @@ else {
 /* CONTROLLED REFRESH */
 
 async function refreshDashboard() {
+
     if (refreshInProgress) {
 
-    pendingRefresh = true;
+        pendingRefresh = true;
 
-    return;
+        return;
 
-}
+    }
 
     refreshInProgress = true;
-    apiMessages = [];
-    setText("apiStatus", "Refreshing live data...");
+
+    try {
+
+        apiMessages = [];
+
+        setText(
+            "apiStatus",
+            "Refreshing live data..."
+        );
 
     const requests = [
         getWBGT,
@@ -1468,17 +1476,23 @@ async function refreshDashboard() {
 
     setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
 
+    }
+finally {
+
     refreshInProgress = false;
 
-if (pendingRefresh) {
+    if (pendingRefresh) {
 
-    pendingRefresh = false;
+        pendingRefresh = false;
 
-    refreshDashboard();
+        refreshDashboard();
+
+    }
 
 }
 
-/*Close refreshDashboard() */
+/* Close refreshDashboard() */
+
 }
     
 /* START */
