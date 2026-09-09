@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Singapore Weather &amp; Outdoor Work Dashboard v2.2.5 Patch 2.1</title>
+<title>Singapore Weather &amp; Outdoor Work Dashboard v2.3.0</title>
 
 <style>
 :root {
@@ -311,7 +311,7 @@ body {
 <header class="header">
     <div>
         <h1>Singapore Weather &amp; Outdoor Work Dashboard</h1>
-        <div class="version">Version 2.2.5 | Multi-Zone Reliability Enhancement | Patch 2.1</div>
+        <div class="version">Version 2.3.0 | Preferred Zone Persistence</div>
     </div>
 
     <div class="clock-panel">
@@ -319,7 +319,7 @@ body {
         <div class="small">Singapore Time</div>
     </div>
 </header>
-<section class="zone-control" aria-label="Region selection"><label for="zoneSelector">Region:</label><select id="zoneSelector"><option value="west" selected>West</option><option value="east">East</option><option value="north">North</option><option value="south">South</option><option value="central">Central</option></select></section>
+<section class="zone-control" aria-label="Region selection"><label for="zoneSelector">Region:</label><select id="zoneSelector"><option value="west">West</option><option value="east">East</option><option value="north">North</option><option value="south">South</option><option value="central">Central</option></select></section>
 
 <section id="banner">CHECKING LIVE CONDITIONS</section>
 
@@ -494,8 +494,8 @@ body {
 /* =====================================================
 
 Singapore Weather & Outdoor Work Dashboard
-Version : 2.2.5 Patch 2.1
-Release : Region Refresh State Completion Fix
+Version : 2.3.0
+Release : Preferred Zone Persistence and Refresh State Fix
 
 Features
 ---------
@@ -578,8 +578,39 @@ const API = {
     
 /* FORECAST AREA MAPPING */
 const FORECAST_FALLBACKS={west:["Choa Chu Kang","Tengah","Bukit Batok","Bukit Panjang","Jurong East","Jurong West","Clementi"],east:["Changi","Tampines","Pasir Ris","Bedok","Paya Lebar","Marine Parade"],north:["Woodlands","Yishun","Sembawang","Mandai","Sungei Kadut","Seletar"],south:["Sentosa","Bukit Merah","Queenstown","Southern Islands","Kallang"],central:["City","Novena","Toa Payoh","Bishan","Bukit Timah","Tanglin","Central Water Catchment"]};
+/* ZONE PREFERENCE */
+const VALID_ZONES = new Set([
+    "west",
+    "east",
+    "north",
+    "south",
+    "central"
+]);
+
+function loadPreferredZone() {
+    try {
+        const savedZone = localStorage.getItem("preferredZone");
+        return VALID_ZONES.has(savedZone) ? savedZone : "west";
+    }
+    catch (error) {
+        console.warn("Preferred zone could not be loaded:", error);
+        return "west";
+    }
+}
+
+function savePreferredZone(zone) {
+    try {
+        if (VALID_ZONES.has(zone)) {
+            localStorage.setItem("preferredZone", zone);
+        }
+    }
+    catch (error) {
+        console.warn("Preferred zone could not be saved:", error);
+    }
+}
+
 /* LIVE VALUES */
-let currentZone="west";
+let currentZone = loadPreferredZone();
 let regionRefreshInProgress=false;
 let currentWBGT = null;
 let currentHeatStress = "";
@@ -1006,8 +1037,6 @@ function updateClock() {
 
     if (nextRefreshAt) {
         setText("nextRefresh", formatSingaporeDate(nextRefreshAt));
-    if(currentZone===refreshZone){regionRefreshInProgress=false;}else{pendingRefresh=true;}
-    renderApiHealth();renderDashboardHealth();updateSafetyVisuals();
     }
 }
 
@@ -1699,6 +1728,11 @@ document.addEventListener(
 
         updateClock();
 
+        const zoneSelector = document.getElementById("zoneSelector");
+        if (zoneSelector) {
+            zoneSelector.value = currentZone;
+        }
+
         renderApiHealth();
 
         renderDashboardHealth();
@@ -1718,7 +1752,45 @@ document.addEventListener(
     }
 );
 /* REGION SELECTOR */
-document.getElementById("zoneSelector")?.addEventListener("change",function(){currentZone=this.value;regionRefreshInProgress=true;currentPSI=null;currentForecast="";apiHealth.PSI="LOADING";apiHealth.Forecast="LOADING";const z=currentZone.toUpperCase();setText("psiRegionLabel",`PSI ${z}`);setText("psiRegionTitle",`PSI (${z})`);setText("psiRegionDescription",`24-hour PSI, ${z} region`);setText("psi","Refreshing...");setText("summaryPSI","Refreshing...");setText("summaryForecast","Refreshing...");setText("forecast","Refreshing selected region...");setText("forecastArea",z);renderApiHealth();renderDashboardHealth();updateSafetyVisuals();refreshDashboard();});
+document
+    .getElementById("zoneSelector")
+    ?.addEventListener("change", function () {
+
+        const selectedZone = this.value;
+
+        if (!VALID_ZONES.has(selectedZone)) {
+            this.value = currentZone;
+            return;
+        }
+
+        currentZone = selectedZone;
+        savePreferredZone(currentZone);
+
+        regionRefreshInProgress = true;
+        currentPSI = null;
+        currentForecast = "";
+        apiHealth.PSI = "LOADING";
+        apiHealth.Forecast = "LOADING";
+
+        const zoneLabel = currentZone.toUpperCase();
+
+        setText("psiRegionLabel", `PSI ${zoneLabel}`);
+        setText("psiRegionTitle", `PSI (${zoneLabel})`);
+        setText(
+            "psiRegionDescription",
+            `24-hour PSI, ${zoneLabel} region`
+        );
+        setText("psi", "Refreshing...");
+        setText("summaryPSI", "Refreshing...");
+        setText("summaryForecast", "Refreshing...");
+        setText("forecast", "Refreshing selected region...");
+        setText("forecastArea", zoneLabel);
+
+        renderApiHealth();
+        renderDashboardHealth();
+        updateSafetyVisuals();
+        refreshDashboard();
+    });
 
 </script>
 
