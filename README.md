@@ -1,29 +1,19 @@
 # Singapore Weather & Outdoor Work Dashboard
 
-**Version 2.4.1 | Operational Visibility Enhancement**
+**Version 2.4.2 | Operational Readiness Enhancement**
 
 A browser-based weather and outdoor-work decision-support dashboard covering five Singapore regions.
 
-The dashboard combines regional PSI and forecast information, nearest-active-station weather readings, lightning observations, operational advisories, risk status, system health, and a saved preferred region.
-
-## Live Dashboard
-
-Add the published GitHub Pages address here:
-
-```text
-https://YOUR-GITHUB-USERNAME.github.io/sg-weather-dashboard/
-```
-
-Replace `YOUR-GITHUB-USERNAME` with the repository owner's GitHub username.
+The dashboard combines regional PSI and forecast information, nearest-active-station weather readings, Singapore-wide lightning observations, operational advisories, risk status, system health, saved region preference, refresh progress, last successful refresh tracking, and data freshness.
 
 ## Current Release
 
 ```text
-Version: 2.4.1
-Release: Operational Visibility Enhancement
+Version: 2.4.2
+Release: Operational Readiness Enhancement
 ```
 
-v2.4.1 is a display and usability update built on the v2.4.0 weather engine. It does not change API endpoints, risk thresholds, advisory priority, regional station selection, forecast mapping, or refresh logic.
+v2.4.2 extends v2.4.1 with manual refresh control and refresh-readiness information. The release retains the five-minute automatic refresh, API request spacing, region selection, regional station selection, forecast mapping, safety thresholds, advisory priority, refresh lock, and pending-refresh queue.
 
 ## Main Features
 
@@ -50,7 +40,7 @@ The selected region controls:
 
 The selected region is stored in the browser using `localStorage`.
 
-- The selected region remains after page refresh.
+- The selected region remains after a page refresh.
 - The selected region is restored when the dashboard is reopened in the same browser.
 - Invalid stored values default to West.
 - Browser storage errors do not stop the dashboard.
@@ -59,16 +49,73 @@ The preference is specific to the browser, device, and dashboard address.
 
 ### Active Region Indicator
 
-The current region is displayed below the Singapore clock and in the footer status summary.
-
-Example:
+The current region appears below the Singapore clock and in the footer status summary.
 
 ```text
 ACTIVE REGION
 NORTH
 ```
 
-### Regional Weather Station Selection
+### Refresh Now
+
+The **Refresh Now** button starts the existing protected refresh sequence.
+
+- The button is disabled during an active refresh.
+- Parallel refresh sequences are prevented.
+- If another refresh is requested during an active refresh, one pending refresh is recorded.
+- The five-minute automatic refresh remains active.
+
+### Refresh Progress
+
+The dashboard shows each stage of the seven-feed sequence:
+
+```text
+Refreshing 1/7: WBGT
+Refreshing 2/7: Lightning
+Refreshing 3/7: PSI
+Refreshing 4/7: Temperature
+Refreshing 5/7: Humidity
+Refreshing 6/7: Rainfall
+Refreshing 7/7: Forecast
+```
+
+After completion, the dashboard shows:
+
+```text
+Completed: 7/7 feeds OK
+```
+
+or:
+
+```text
+Completed with unavailable feeds
+```
+
+### Last Successful Refresh
+
+The dashboard separates:
+
+- Last dashboard refresh completed
+- Last successful refresh
+
+The last successful timestamp updates only when all seven feed states are `OK`.
+
+A degraded refresh updates the completion time but does not overwrite the last successful refresh time.
+
+### Data Freshness
+
+Data freshness is calculated from the last successful refresh.
+
+```text
+Fresh: less than 10 minutes
+Aging: 10 to less than 20 minutes
+Stale: 20 minutes or more
+No successful refresh: no valid successful timestamp
+```
+
+The last successful refresh timestamp is stored in the same browser using `localStorage`.
+
+## Regional Weather Station Selection
 
 Air Temperature, Relative Humidity, and Rainfall use the nearest available active station to a representative point for the selected region.
 
@@ -81,14 +128,14 @@ Distance: [distance]
 Region: [selected region]
 ```
 
-Different metrics may use different stations because station availability differs between datasets.
+Different metrics may use different stations because station availability can differ between datasets.
 
-### Regional Forecast Fallbacks
+## Regional Forecast Fallbacks
 
 The dashboard checks forecast areas in a defined order.
 
 ```javascript
-const FORECAST_FALLBACKS = {
+const FORECASTS = {
     west: [
         "Choa Chu Kang",
         "Tengah",
@@ -150,13 +197,15 @@ The dashboard displays:
 - Risk Matrix
 - System Health
 - Dashboard Health
-- Last and next refresh times
+- Refresh progress
+- Last completed refresh
+- Last successful refresh
+- Data freshness
+- Next scheduled refresh
 
-## Operational Visibility Features
+## Dashboard Health
 
-### Dashboard Health Badges
-
-The Dashboard Health panel uses these indicators:
+Dashboard Health uses these states:
 
 ```text
 🟢 HEALTHY
@@ -165,7 +214,7 @@ The Dashboard Health panel uses these indicators:
 🔵 INITIALISING
 ```
 
-### System Health Detail
+### System Health Feed States
 
 Each data feed shows an icon and status label.
 
@@ -176,42 +225,6 @@ Possible states include:
 - Rate Limited
 - Mapping Unavailable
 - Unavailable
-
-Example:
-
-```text
-✅ WBGT          OK
-✅ Lightning     OK
-⚠ Temperature   RATE LIMITED
-```
-
-### Forecast Area Label
-
-The forecast card identifies the selected forecast area.
-
-```text
-Forecast Area
-Woodlands
-```
-
-### Footer Status Summary
-
-The footer shows:
-
-- Dashboard Health
-- Active Region
-
-### Data Classification Legend
-
-The dashboard explains the scope of each feed:
-
-- WBGT: National feed
-- Lightning: Singapore-wide observations
-- PSI: Regional
-- Forecast: Regional area
-- Temperature: Regional station
-- Humidity: Regional station
-- Rainfall: Regional station
 
 ## Risk Matrix
 
@@ -264,7 +277,9 @@ When lightning observations are returned:
 
 The dashboard includes:
 
-- Five-minute refresh cycle
+- Five-minute automatic refresh
+- Manual Refresh Now control
+- Seven-stage refresh progress
 - Delay between API requests
 - Refresh lock protection using `try` and `finally`
 - One pending refresh queue
@@ -275,7 +290,19 @@ The dashboard includes:
 - Stale-value prevention
 - Live Data Incomplete protection
 - Preferred-region validation
+- Last-successful-refresh browser storage
 - Browser storage error handling
+- Freshness calculation based on the last fully successful refresh
+
+## Data Classification
+
+- WBGT: National feed
+- Lightning: Singapore-wide observations
+- PSI: Regional
+- Forecast: Regional area
+- Temperature: Regional station
+- Humidity: Regional station
+- Rainfall: Regional station
 
 ## Data Sources
 
@@ -295,7 +322,8 @@ The dashboard retrieves live information through Data.gov.sg endpoints for:
 sg-weather-dashboard/
 ├── index.html
 ├── README.md
-└── CHANGELOG.md
+├── CHANGELOG.md
+└── Singapore_Weather_Dashboard_User_Manual_v2.4.1.docx
 ```
 
 The dashboard uses one HTML file containing its HTML, CSS, and JavaScript.
@@ -303,12 +331,12 @@ The dashboard uses one HTML file containing its HTML, CSS, and JavaScript.
 ## GitHub Pages Deployment
 
 1. Keep a backup of the current production `index.html`.
-2. Rename `index_v2.4.1.html` to `index.html`.
+2. Rename `index_v2.4.2.html` to `index.html`.
 3. Upload `index.html`, `README.md`, and `CHANGELOG.md` to the repository root.
 4. Commit the files to the `main` branch.
 5. Confirm GitHub Pages deploys from `main` and `/ (root)`.
 6. Open the published dashboard.
-7. Perform the production checks below.
+7. Run the production checks below.
 
 ## Production Checks
 
@@ -325,17 +353,20 @@ const TEST_MODE = {
 
 After deployment:
 
-1. Confirm the browser title shows v2.4.1.
-2. Confirm the version label shows Operational Visibility Enhancement.
-3. Confirm the Active Region matches the selector.
-4. Test West, East, North, South, and Central.
-5. Confirm PSI and forecast match the selected region.
-6. Confirm Temperature, Humidity, and Rainfall show station details.
-7. Confirm System Health shows status text for all seven feeds.
-8. Confirm Dashboard Health shows the correct colour badge.
-9. Confirm the footer Health and Active Region update.
-10. Refresh the browser and confirm the preferred region remains selected.
-11. Confirm there are no browser console errors.
+1. Confirm the browser title and dashboard label show v2.4.2.
+2. Confirm the Active Region matches the selector.
+3. Test West, East, North, South, and Central.
+4. Confirm the preferred region remains after page reload.
+5. Select **Refresh Now**.
+6. Confirm progress moves from feed 1 to feed 7.
+7. Confirm the Refresh Now button is disabled during refresh.
+8. Confirm Last Dashboard Refresh Completed updates after every completed sequence.
+9. Confirm Last Successful Refresh updates only when all seven feeds show `OK`.
+10. Confirm Data Freshness shows Fresh after a fully successful refresh.
+11. Confirm PSI and forecast match the selected region.
+12. Confirm Temperature, Humidity, and Rainfall show station details.
+13. Confirm System Health shows all seven feeds.
+14. Confirm there are no browser console errors.
 
 ## Known Limitations
 
@@ -344,16 +375,29 @@ After deployment:
 - Temperature, Humidity, and Rainfall may use different stations.
 - Station selection can change when a nearer station is unavailable.
 - Lightning observations are Singapore-wide and are not filtered by selected region.
-- WBGT is presented as a national feed and is not selected by region.
+- WBGT is a national feed and is not selected by region.
 - Forecast information is area-based rather than site-specific.
-- Preferred-region storage does not transfer between browsers or devices.
-- Clearing browser site data can remove the saved preference.
+- Preferred-region and last-successful-refresh storage do not transfer between browsers or devices.
+- Clearing browser site data can remove stored preferences and the successful-refresh timestamp.
 - External API rate limiting or downtime can produce API Busy or Unavailable states.
-- The dashboard does not store historical trends or operational event logs.
-- The dashboard is not an official system-of-record.
+- Data Freshness reflects the last complete seven-feed success in that browser, not official API publication time.
+- The dashboard does not store historical trends or persistent event logs.
+- The dashboard is not an official system of record.
 - The dashboard does not replace official alerts, risk assessments, site procedures, or supervisor decisions.
 
 ## Version History
+
+### v2.4.2
+
+Operational Readiness Enhancement:
+
+- Added protected Refresh Now control.
+- Added seven-feed refresh progress.
+- Added last successful refresh tracking.
+- Added Fresh, Aging, Stale, and No Successful Refresh states.
+- Added browser persistence for the last successful refresh timestamp.
+- Added completion text for full and degraded refreshes.
+- Retained the five-minute automatic refresh and existing safety logic.
 
 ### v2.4.1
 
@@ -367,7 +411,6 @@ Operational Visibility Enhancement:
 - Added footer Dashboard Status.
 - Added Data Classification legend.
 - Added version tooltip.
-- Retained v2.4.0 weather and safety logic.
 
 ### v2.4.0
 
