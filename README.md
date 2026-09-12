@@ -1,36 +1,172 @@
 # Singapore Weather & Outdoor Work Dashboard
 
-**Version 2.5.0 | Cause-Based Advisory Enhancement**
+**Version 2.6.2 | Safe Developer Test Mode**
 
-A browser-based weather and outdoor-work decision-support dashboard covering five Singapore regions.
+A browser-based, location-based weather and outdoor-work decision-support dashboard for Singapore.
 
-The dashboard combines regional PSI and forecast information, nearest-active-station weather readings, Singapore-wide lightning observations, operational advisories, risk status, system health, refresh readiness, and saved region preference.
+The dashboard combines nearest available weather observations, regional air quality, forecast information, lightning-distance assessment, cause-based operational advice, system-health monitoring, refresh-readiness information, and a controlled developer test mode.
 
 ## Current Release
 
 ```text
-Version: 2.5.0
-Release: Cause-Based Advisory Enhancement
+Version: 2.6.2
+Release: Safe Developer Test Mode
+Status: Production candidate
 ```
 
-v2.5.0 adds a structured decision-support layer to the v2.4.2 dashboard. The advisory now identifies the main hazard, supporting conditions, affected activities, operational actions, control priority, and decision basis.
+Version 2.6.2 retains the location engine and hotfix controls introduced in v2.6.0 and v2.6.1. It adds a hidden, session-only developer test mode for validating lightning, heat, rainfall, air-quality, forecast, combined-hazard, and fallback logic without altering successful live-refresh records.
 
-The release retains:
+The final v2.6.2 build also corrects the Lightning Distance Unavailable scenario so its Control Priority is:
 
-- Five-minute automatic refresh
-- Refresh Now control
-- Seven-feed refresh progress
-- Last successful refresh tracking
-- Data freshness
-- Preferred region persistence
-- Regional station selection
-- Regional PSI and forecast mapping
-- Refresh lock and pending-refresh queue
-- System Health and Dashboard Health
+```text
+DATA VERIFICATION REQUIRED
+```
 
-## Region Selection
+## Main Functions
+
+### Location Selection
 
 Users can select:
+
+- West Reference
+- East Reference
+- North Reference
+- South Reference
+- Central Reference
+- ITE College West
+- Custom Location
+- Current Device Location
+
+The selected location controls:
+
+- Nearest Temperature station
+- Nearest Humidity station
+- Nearest Rainfall station
+- Nearest valid WBGT reading where coordinates are available
+- Nearest MSS lightning observation
+- Nearest forecast area where area coordinates are available
+- Regional forecast fallback
+- Inferred PSI region
+- Cause-Based Advisory Decision Basis
+- Location-specific successful-refresh history
+
+### ITE College West Preset
+
+```text
+Name: ITE College West
+Latitude: 1.3764369
+Longitude: 103.7523055
+PSI Region: West
+```
+
+### Custom Location
+
+Users can enter:
+
+- Location name
+- Latitude
+- Longitude
+
+The dashboard accepts coordinates within its configured Singapore operating range. The custom location is stored in the browser.
+
+### Current Device Location
+
+The **Use My Current Location** button requests browser geolocation permission.
+
+When permission is granted, the dashboard:
+
+1. Reads the device coordinates.
+2. Infers the nearest configured PSI region.
+3. Selects nearby weather stations.
+4. Calculates the nearest lightning distance.
+5. Selects a forecast area or regional fallback.
+6. Updates the Cause-Based Advisory.
+
+Device location is user initiated. Browser permission or corporate policy can prevent access.
+
+## Location-Based Lightning
+
+The dashboard calculates the distance from the selected location to the nearest geolocated MSS lightning observation.
+
+### Distance Thresholds
+
+```text
+Distance ≤ 8 km
+RED
+
+Distance > 8 km and ≤ 15 km
+AMBER
+
+Distance > 15 km
+GREEN
+```
+
+### Lightning Distance Unavailable
+
+If lightning observations are returned but their coordinates cannot be resolved, the dashboard shows:
+
+```text
+Lightning Distance Unavailable
+```
+
+The dashboard does not treat this condition as clear.
+
+Expected result:
+
+```text
+Risk Matrix:
+Lightning = DISTANCE UNAVAILABLE
+Overall = AMBER
+
+Primary Hazard:
+Lightning Distance Unavailable
+
+Control:
+Data verification required
+
+Control Priority:
+DATA VERIFICATION REQUIRED
+```
+
+The user should check official lightning information and apply approved site lightning procedures.
+
+## Location-Based Weather Selection
+
+### Temperature, Humidity, and Rainfall
+
+The dashboard selects the nearest available active station to the selected location.
+
+Each card displays:
+
+```text
+Station name
+Station ID
+Distance from selected location
+```
+
+Different datasets can select different stations because station availability can differ.
+
+### WBGT
+
+The dashboard first attempts to use the nearest valid geolocated WBGT reading.
+
+Fallback order:
+
+1. Nearest valid geolocated WBGT reading
+2. Valid feed reading without usable coordinates
+3. Unavailable
+
+### Forecast
+
+Forecast selection order:
+
+1. Nearest forecast area using valid area coordinates
+2. Configured fallback area for the inferred region
+3. Mapping Unavailable
+
+### PSI
+
+PSI remains a regional dataset. For custom and device locations, the dashboard infers the nearest configured region:
 
 - West
 - East
@@ -38,132 +174,21 @@ Users can select:
 - South
 - Central
 
-The selected region controls:
-
-- 24-hour PSI
-- PSI labels and status
-- 2-hour forecast area
-- Air Temperature station selection
-- Relative Humidity station selection
-- Rainfall station selection
-- Decision Basis region display
-
-### Preferred Region
-
-The selected region is stored in the browser using `localStorage`.
-
-- The selected region remains after page refresh.
-- The selected region is restored when the dashboard is reopened in the same browser.
-- Invalid stored values default to West.
-- Browser storage errors do not stop the dashboard.
-
-The preference is specific to the browser, device, and dashboard address.
-
 ## Cause-Based Outdoor Work Advisory
 
-The advisory explains what is driving the current dashboard state and what users should do.
+The advisory explains the decision through:
 
-### Primary Hazard
+- Primary Hazard
+- Measurement
+- Trigger
+- Control
+- Supporting Conditions
+- Affected Activities
+- Operational Actions
+- Control Priority
+- Decision Basis
 
-The highest-priority active condition is displayed first.
-
-Possible primary hazards include:
-
-- Singapore Lightning Observations
-- Hazardous Air Quality
-- Very Unhealthy Air Quality
-- High Heat Stress
-- Moderate Heat Stress
-- Unhealthy Air Quality
-- Rain Detected
-- Rain, Shower, or Thunder Forecast
-- Live Data Incomplete
-- No Active Hazard
-
-### Measurement, Trigger, and Control
-
-Each primary hazard states:
-
-- Measurement used
-- Trigger threshold
-- Control category
-
-Example:
-
-```text
-Primary Hazard
-High Heat Stress
-
-Measurement
-WBGT: 32.4°C
-
-Trigger
-WBGT ≥ 32.0°C or source class High
-
-Control
-High heat-stress controls
-```
-
-### Supporting Conditions
-
-The dashboard displays up to three other active conditions below the primary hazard.
-
-Example:
-
-```text
-Primary Hazard
-High Heat Stress
-
-Supporting Conditions
-Rain Detected
-Showers Forecast
-Unhealthy Air Quality
-```
-
-### Affected Activities
-
-The advisory identifies activities that may require review.
-
-Examples include:
-
-- Work at height
-- Open-field work
-- Outdoor sports and events
-- Prolonged outdoor work
-- Strenuous work
-- Direct-sun work
-- External access routes
-- Rain-sensitive work
-- Event setup
-
-### Operational Actions
-
-Actions change according to the primary hazard.
-
-For lightning observations:
-
-- Suspend exposed outdoor activities.
-- Suspend work at height and open-field activities.
-- Move personnel to shelter.
-- Check official site lightning alerts and procedures.
-
-For high heat stress:
-
-- Review strenuous and prolonged outdoor work.
-- Increase hydration and rest frequency.
-- Reduce physical workload where practicable.
-- Monitor personnel for heat-related symptoms.
-
-For rain:
-
-- Review slip, trip, and water-accumulation hazards.
-- Check external access routes.
-- Protect rain-sensitive equipment and materials.
-- Continue monitoring rainfall and lightning.
-
-### Control Priority
-
-The advisory assigns one of these levels:
+### Control Priority Levels
 
 ```text
 IMMEDIATE ACTION REQUIRED
@@ -173,120 +198,20 @@ ROUTINE MONITORING
 DATA VERIFICATION REQUIRED
 ```
 
-### Decision Basis
+### Main Hazard Types
 
-The advisory shows the readings used for the decision:
-
-- Selected region
-- Lightning observation count
-- WBGT
-- PSI
-- Forecast
-- Forecast area
-
-## Lightning Treatment
-
-The lightning feed remains Singapore-wide in v2.5.0.
-
-The dashboard displays the observation count returned by the Singapore API. It does not claim that lightning is within a specific distance of the selected region.
-
-When one or more observations are returned:
-
-- The lightning value changes to Red.
-- The lightning icon blinks.
-- The main banner changes to a lightning warning.
-- Lightning becomes the Primary Hazard.
-- The Control Priority becomes Immediate Action Required.
-
-Users must check official site lightning alerts and procedures before acting.
-
-## Regional Weather Station Selection
-
-Air Temperature, Relative Humidity, and Rainfall use the nearest available active station to a representative point for the selected region.
-
-Each card displays:
-
-```text
-Station: [station name]
-ID: [station ID]
-Distance: [distance]
-Region: [selected region]
-```
-
-Different metrics may use different stations because station availability can differ between datasets.
-
-## Regional Forecast Fallbacks
-
-The dashboard checks forecast areas in a defined order.
-
-```javascript
-const AREAS = {
-    west: [
-        "Choa Chu Kang",
-        "Tengah",
-        "Bukit Batok",
-        "Bukit Panjang",
-        "Jurong East",
-        "Jurong West",
-        "Clementi"
-    ],
-    east: [
-        "Changi",
-        "Tampines",
-        "Pasir Ris",
-        "Bedok",
-        "Paya Lebar",
-        "Marine Parade"
-    ],
-    north: [
-        "Woodlands",
-        "Yishun",
-        "Sembawang",
-        "Mandai",
-        "Sungei Kadut",
-        "Seletar"
-    ],
-    south: [
-        "Sentosa",
-        "Bukit Merah",
-        "Queenstown",
-        "Southern Islands",
-        "Kallang"
-    ],
-    central: [
-        "City",
-        "Novena",
-        "Toa Payoh",
-        "Bishan",
-        "Bukit Timah",
-        "Tanglin",
-        "Central Water Catchment"
-    ]
-};
-```
-
-If no configured area is returned, the dashboard shows a Mapping Unavailable state instead of using an unrelated forecast area.
-
-## Dashboard Information
-
-The dashboard displays:
-
-- Wet Bulb Globe Temperature, or WBGT
-- Singapore-wide lightning observations
-- Regional 24-hour PSI
-- Regional Air Temperature station reading
-- Regional Relative Humidity station reading
-- Regional Rainfall station reading
-- Regional 2-hour forecast
-- Cause-Based Outdoor Work Advisory
-- Risk Matrix
-- System Health
-- Dashboard Health
-- Refresh progress
-- Last completed refresh
-- Last successful refresh
-- Data freshness
-- Next scheduled refresh
+- Lightning Within 8 km
+- Lightning Within 15 km
+- Lightning Distance Unavailable
+- Hazardous Air Quality
+- Very Unhealthy Air Quality
+- Unhealthy Air Quality
+- High Heat Stress
+- Moderate Heat Stress
+- Rain Detected
+- Rain, Shower, or Thunder Forecast
+- Live Data Incomplete
+- No Active Hazard
 
 ## Risk Matrix
 
@@ -298,7 +223,7 @@ The Risk Matrix evaluates:
 - Weather
 - Overall condition
 
-Possible Overall states include:
+Possible Overall states:
 
 - Red
 - Amber
@@ -308,44 +233,13 @@ Possible Overall states include:
 
 Missing critical data is not treated as safe.
 
-## Advisory and Banner Priority
-
-The dashboard applies this general order:
-
-1. Confirmed lightning observations
-2. Hazardous air quality
-3. Very unhealthy air quality
-4. High heat stress
-5. Live data incomplete
-6. Moderate heat stress
-7. Unhealthy air quality
-8. Rain detected
-9. Rain, shower, or thunder forecast
-10. No active hazard
-
-A confirmed Red hazard remains visible if another feed fails. The failed source can appear as a supporting condition.
-
-## PSI Categories
-
-- Above 300: Hazardous
-- Above 200: Very Unhealthy
-- Above 100: Unhealthy
-- 100 or below: Good / Moderate
-
 ## Refresh Readiness
 
 ### Refresh Now
 
-The **Refresh Now** button uses the same protected refresh function as the automatic schedule.
+The **Refresh Now** button uses the same protected refresh sequence as the automatic schedule.
 
-- The button is disabled during an active refresh.
-- Parallel refresh sequences are prevented.
-- One pending refresh can be recorded.
-- The five-minute automatic refresh remains active.
-
-### Refresh Progress
-
-The dashboard shows:
+### Seven-Feed Progress
 
 ```text
 Refreshing 1/7: WBGT
@@ -357,90 +251,254 @@ Refreshing 6/7: Rainfall
 Refreshing 7/7: Forecast
 ```
 
-After completion:
+### Refresh Protection
 
-```text
-Completed: 7/7 feeds OK
-```
+The dashboard includes:
 
-or:
-
-```text
-Completed with unavailable feeds
-```
+- Five-minute automatic refresh
+- Fifteen-second timeout for each API request
+- Request cancellation using `AbortController`
+- Delay between API requests
+- Refresh lock
+- One pending refresh queue
+- `try` and `finally` cleanup
+- Selected-location snapshot for each refresh
+- Follow-up refresh when the location changes during an active sequence
 
 ### Last Successful Refresh
 
-The successful timestamp updates only when all seven feed states are `OK`.
+A successful timestamp is recorded only when:
 
-A degraded refresh updates the completion time but does not overwrite the last successful timestamp.
+- All seven feeds are `OK`
+- The location has not changed during the refresh
+- Developer Test Mode is not active
+
+Successful-refresh history is stored separately for each location key.
 
 ### Data Freshness
-
-Freshness is calculated from the last successful refresh:
 
 ```text
 Fresh: less than 10 minutes
 Aging: 10 to less than 20 minutes
 Stale: 20 minutes or more
-No Successful Refresh: no valid timestamp
+No Successful Refresh: no valid successful timestamp
 ```
 
-The timestamp is stored in the same browser using `localStorage`.
+Freshness is based on the last complete seven-feed browser success. It is not the official source publication time.
 
 ## System Health
 
-Each feed can show:
+Possible feed states:
 
 - OK
 - Loading
 - Rate Limited
+- Timeout
+- Fallback
 - Mapping Unavailable
 - Unavailable
 
-Dashboard Health can show:
+Possible Dashboard Health states:
 
 ```text
-🟢 HEALTHY
-🟠 DEGRADED
-🔄 REFRESHING
-🔵 INITIALISING
+HEALTHY
+DEGRADED
+REFRESHING
+INITIALISING
 ```
 
-## Reliability Controls
+## Payload Validation
 
-The dashboard includes:
+Validation is enabled for:
 
-- Five-minute automatic refresh
-- Manual Refresh Now control
-- Seven-stage refresh progress
-- Delay between API requests
-- Refresh lock protection using `try` and `finally`
-- One pending refresh queue
-- Consistent selected-region snapshot during a refresh
-- Regional refresh loading state
-- Forecast fallback protection
-- Failed API state cleanup
-- Live Data Incomplete protection
-- Preferred-region validation
-- Last-successful-refresh browser storage
-- Browser storage error handling
-- Freshness calculation based on the last fully successful refresh
-- Dynamic text escaping in the Cause-Based Advisory
+- WBGT readings
+- Lightning observations
+- Temperature stations and readings
+- Humidity stations and readings
+- Rainfall stations and readings
+- Forecast entries
+
+The console reports:
+
+- Record count
+- Usable record count
+- Schema signature
+- Sample records
+- PASS
+- FALLBACK REQUIRED
+
+Validation is diagnostic. It does not stop a usable approved fallback from being applied.
+
+## Coordinate Parsing
+
+The location parser supports common structures including:
+
+```text
+location.latitude / location.longitude
+location.lat / location.lon
+location.lat / location.lng
+coordinates.latitude / coordinates.longitude
+coordinates.lat / coordinates.lon
+coordinates.lat / coordinates.lng
+point.latitude / point.longitude
+label_location
+labelLocation
+latitude / longitude
+lat / lon
+lat / lng
+x / y
+[longitude, latitude]
+```
+
+Coordinates must pass the configured Singapore-range check.
+
+## Safe Developer Test Mode
+
+### Opening the Panel
+
+Press:
+
+```text
+Ctrl + Shift + D
+```
+
+or append:
+
+```text
+?debug=true
+```
+
+The query parameter opens the panel but does not activate a simulation.
+
+### Test Scenarios
+
+- Lightning Red ≤8 km
+- Lightning Amber 8-15 km
+- High WBGT
+- Heavy Rain
+- Combined Hazard
+- Lightning Distance Unavailable
+- Clear Conditions
+- Custom
+
+### Scenario Expectations
+
+#### Lightning Red
+
+```text
+Distance: 5.0 km
+Overall: RED
+Primary Hazard: Lightning Within 8 km
+Control Priority: IMMEDIATE ACTION REQUIRED
+```
+
+#### Lightning Amber
+
+```text
+Distance: 12.0 km
+Overall: AMBER
+Primary Hazard: Lightning Within 15 km
+Control Priority: HIGH ATTENTION REQUIRED
+```
+
+#### High WBGT
+
+```text
+WBGT: 32.5°C
+Heat Risk: HIGH
+Overall: RED
+Primary Hazard: High Heat Stress
+Control Priority: HIGH ATTENTION REQUIRED
+```
+
+#### Heavy Rain
+
+```text
+Rainfall: 15.0 mm
+Forecast: Heavy Rain
+Weather Risk: MONITOR
+Overall: AMBER
+Primary Hazard: Rain Detected
+Control Priority: CONTROLS REQUIRED
+```
+
+#### Combined Hazard
+
+```text
+Lightning: 6.0 km
+WBGT: 32.3°C
+PSI: 120
+Rainfall: 12.0 mm
+Forecast: Thundery Showers
+
+Primary Hazard: Lightning Within 8 km
+Control Priority: IMMEDIATE ACTION REQUIRED
+```
+
+#### Lightning Distance Unavailable
+
+```text
+Lightning observations: 8
+Distance: unavailable
+Overall: AMBER
+Primary Hazard: Lightning Distance Unavailable
+Control Priority: DATA VERIFICATION REQUIRED
+```
+
+#### Clear Conditions
+
+```text
+Lightning: Clear
+WBGT: 28.0°C
+PSI: 50
+Rainfall: 0.0 mm
+Forecast: Fair
+Overall: GREEN
+Control Priority: ROUTINE MONITORING
+```
+
+### Test-Mode Safety Controls
+
+- Hidden by default
+- Session only
+- Persistent red simulation banner
+- Amber outlines around simulated fields
+- Live refresh paused during simulation
+- Test values excluded from successful-refresh tracking
+- Test values not saved to browser storage
+- Active test panel cannot be hidden
+- Exit requires live-data restoration
+- Page reload returns to live mode
+
+### Exiting Test Mode
+
+Select:
+
+```text
+Exit Test Mode and Restore Live Data
+```
+
+The dashboard will:
+
+1. Clear simulation indicators.
+2. Reset location-dependent values.
+3. Restore the loading state.
+4. Run a full seven-feed live refresh.
+5. Recalculate the Risk Matrix and Advisory.
 
 ## Data Classification
 
-- WBGT: National feed
-- Lightning: Singapore-wide observations
-- PSI: Regional
-- Forecast: Regional area
-- Temperature: Regional station
-- Humidity: Regional station
-- Rainfall: Regional station
+- WBGT: Nearest valid reading to selected location, with feed fallback
+- Lightning: Nearest MSS observation to selected location, with Singapore-wide fallback
+- PSI: Inferred region
+- Forecast: Nearest area or regional fallback
+- Temperature: Nearest active station
+- Humidity: Nearest active station
+- Rainfall: Nearest active station
 
 ## Data Sources
 
-The dashboard retrieves live information through Data.gov.sg endpoints for:
+The dashboard uses Data.gov.sg endpoints for:
 
 - WBGT
 - Lightning
@@ -457,124 +515,113 @@ sg-weather-dashboard/
 ├── index.html
 ├── README.md
 ├── CHANGELOG.md
-└── Singapore_Weather_Dashboard_User_Manual_v2.4.2.docx
+└── Singapore_Weather_Dashboard_User_Manual.docx
 ```
-
-The dashboard uses one HTML file containing its HTML, CSS, and JavaScript.
 
 ## GitHub Pages Deployment
 
-1. Keep a backup of the current production `index.html`.
-2. Rename `index_v2.5.0.html` to `index.html`.
-3. Upload `index.html`, `README.md`, and `CHANGELOG.md` to the repository root.
-4. Commit the files to the `main` branch.
-5. Confirm GitHub Pages deploys from `main` and `/ (root)`.
-6. Open the published dashboard.
-7. Run the production checks below.
+1. Back up the current production `index.html`.
+2. Upload the corrected v2.6.2 file as `index.html`.
+3. Upload `README.md` and `CHANGELOG.md` to the repository root.
+4. Commit to the deployment branch.
+5. Open the published dashboard.
+6. Perform a hard browser refresh.
+7. Run the checks below.
 
 ## Production Checks
 
-Before deployment, confirm:
-
-```javascript
-const TEST = {
-    LIGHTNING: false,
-    PSI: false,
-    WBGT: false,
-    RAINFALL: false
-};
-```
-
-After deployment:
-
-1. Confirm the browser title and dashboard label show v2.5.0.
-2. Confirm the Active Region matches the selector.
-3. Test West, East, North, South, and Central.
-4. Confirm the preferred region remains after page reload.
-5. Select **Refresh Now**.
-6. Confirm progress moves from feed 1 to feed 7.
-7. Confirm the Cause-Based Advisory displays a Primary Hazard.
-8. Confirm Supporting Conditions appear when more than one condition is active.
-9. Confirm Affected Activities match the Primary Hazard.
-10. Confirm Operational Actions match the Primary Hazard.
-11. Confirm Control Priority is displayed.
-12. Confirm Decision Basis shows the selected region and current readings.
-13. Confirm a rain or shower condition produces wet-weather controls.
-14. Confirm Last Successful Refresh and Data Freshness update correctly.
-15. Confirm System Health shows all seven feeds.
-16. Confirm there are no browser console errors.
+1. Confirm the title and visible version show v2.6.2.
+2. Confirm the dashboard loads without a console syntax error.
+3. Confirm all seven feeds complete or reach a controlled error state.
+4. Test each location preset.
+5. Test ITE College West.
+6. Test one valid custom location.
+7. Test Current Device Location if permission is available.
+8. Confirm nearest station names and distances are reasonable.
+9. Confirm the inferred PSI region is displayed.
+10. Confirm lightning shows distance, no observation, fallback, timeout, or unavailable.
+11. Confirm Last Successful Refresh and Freshness update only after a complete live success.
+12. Open Developer Test Mode.
+13. Run all seven predefined scenarios.
+14. Confirm Lightning Distance Unavailable produces Data Verification Required.
+15. Exit test mode and confirm a fresh live refresh starts.
+16. Confirm no uncaught browser-console errors appear.
 
 ## Known Limitations
 
-- Region reference points are representative points and not official boundaries.
-- The nearest active station may not represent all conditions across a region.
-- Temperature, Humidity, and Rainfall may use different stations.
-- Station selection can change when a nearer station is unavailable.
-- Lightning observations are Singapore-wide and are not filtered by selected region.
-- The dashboard does not calculate lightning distance from the selected region in v2.5.0.
-- WBGT is a national feed and is not selected by region.
-- Forecast information is area-based rather than site-specific.
-- Preferred-region and successful-refresh storage do not transfer between browsers or devices.
-- Clearing browser site data removes stored values.
-- External API rate limiting or downtime can produce API Busy or Unavailable states.
-- Data Freshness reflects the last complete seven-feed browser success, not official source publication time.
-- The Cause-Based Advisory is rule-based and does not replace a site risk assessment.
-- The dashboard does not store historical trends or persistent operational event logs.
+- Region reference points are representative points, not official boundaries.
+- PSI is regional rather than site specific.
+- Nearest-station readings may not represent all conditions at the selected location.
+- Temperature, Humidity, Rainfall, and WBGT may use different sources.
+- Station availability can change between refreshes.
+- Forecast information is area based.
+- Browser GPS accuracy depends on the device, browser, permission, and environment.
+- Corporate browser policy can block geolocation.
+- A lightning observation without usable coordinates cannot provide distance.
+- Browser storage is local to the browser and device.
+- Clearing site data removes stored locations and successful-refresh history.
+- External API downtime, timeout, rate limits, or schema changes can affect a feed.
+- Developer Test Mode validates rule behaviour but does not validate live API accuracy.
+- The cause-based advice is rule based and does not replace a site risk assessment.
+- The dashboard does not store permanent historical trends or event logs.
 - The dashboard is not an official warning system or system of record.
 - Official alerts, approved procedures, risk assessments, and supervisor instructions take precedence.
 
 ## Version History
 
+### v2.6.2
+
+- Added Safe Developer Test Mode.
+- Added seven predefined scenarios and custom inputs.
+- Added simulation warnings and field outlines.
+- Paused live refresh during simulation.
+- Excluded simulations from successful-refresh tracking.
+- Added live-data restoration after testing.
+- Corrected Lightning Distance Unavailable to use Data Verification Required.
+
+### v2.6.1
+
+- Fixed the global `location` identifier conflict.
+- Renamed the selected location state to `selectedLocation`.
+- Added API timeouts.
+- Expanded coordinate parsing.
+- Added lightning distance fallback.
+- Changed validation to non-blocking diagnostics.
+
+### v2.6.0
+
+- Added location-based selection.
+- Added ITE College West preset.
+- Added Custom Location and Current Device Location.
+- Added nearest lightning distance.
+- Added nearest station and forecast-area selection.
+- Added PSI-region inference.
+- Added location-specific freshness.
+
 ### v2.5.0
 
-Cause-Based Advisory Enhancement:
-
-- Added Primary Hazard identification.
-- Added Measurement, Trigger, and Control details.
-- Added up to three Supporting Conditions.
-- Added Affected Activities.
-- Added hazard-specific Operational Actions.
-- Added Control Priority levels.
-- Added Decision Basis.
-- Added rule-based handling for heat, air quality, rain, forecast, lightning observations, and missing data.
-- Retained v2.4.2 regional and refresh-readiness functions.
+- Added the Cause-Based Advisory.
+- Added Primary Hazard, Supporting Conditions, Affected Activities, Operational Actions, Control Priority, and Decision Basis.
 
 ### v2.4.2
 
-Operational Readiness Enhancement:
-
-- Added protected Refresh Now control.
-- Added seven-feed refresh progress.
-- Added last successful refresh tracking.
-- Added Data Freshness.
+- Added Refresh Now, seven-feed progress, Last Successful Refresh, and Data Freshness.
 
 ### v2.4.1
 
-Operational Visibility Enhancement:
-
-- Added Active Region indicator.
-- Added Dashboard Health badges.
-- Added detailed System Health statuses.
-- Improved station source formatting.
-- Added Forecast Area label and Data Classification legend.
+- Added Active Region, Dashboard Health badges, System Health status detail, Forecast Area, and Data Classification.
 
 ### v2.4.0
 
-Regional Weather Station Selection:
-
 - Added regional Temperature, Humidity, and Rainfall station selection.
-- Added station name, ID, distance, and region display.
 
 ### v2.3.0
 
-- Added preferred-region persistence and validation.
+- Added preferred-region persistence.
 
 ### v2.2.x
 
-- Added Lightning Priority Banner.
-- Added forecast mapping protection.
-- Added refresh queue and refresh-lock protection.
-- Added API failure and Live Data Incomplete handling.
+- Added lightning priority, refresh protection, forecast mapping protection, and incomplete-data handling.
 
 ### v2.1.0
 
@@ -590,4 +637,4 @@ Created by **Kelvin Siow**.
 
 ## Disclaimer
 
-This dashboard is for decision support only. Verify conditions using official information and apply approved workplace safety, emergency, and operational procedures before work starts or continues.
+This dashboard provides decision support only. Verify conditions using official information and apply approved workplace safety, emergency, and operational procedures before work starts or continues.
